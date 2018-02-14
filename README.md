@@ -17,14 +17,21 @@ Nagisa is compatible with: Python 2.7-3.6.
 
 Installation
 ========
+
 ```bash
+# From PyPI
+pip install https://test.pypi.org/simple nagisa
+```
+
+```bash
+# From github
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
 python setup.py install
 # If you got a permission denied error, please run the following line.
 # sudo python setup.py install
-
 ```
+
 
 Usage
 ====
