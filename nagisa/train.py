@@ -1,0 +1,169 @@
+# -*- coding:utf-8 -*-
+
+from __future__ import division, print_function, absolute_import
+
+import time
+import utils
+import model
+import random
+import prepro
+import argparse
+import subprocess
+import numpy as np
+import dynet as dy
+
+from tagger import Tagger
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-train',  type=str)
+parser.add_argument('-dev',    type=str)
+parser.add_argument('-test',   type=str)
+parser.add_argument('-dict',   type=str)
+parser.add_argument('-output', type=str, default='nagisa_v001')
+args = parser.parse_args()
+
+
+def main():
+    # Set hyperparameters
+    hp = {'LAYERS':1,
+          'THRESHOLD':2, 
+          'DECAY':3, 
+          'EPOCH':25, 
+          'WINDOW_SIZE':3, 
+          'DIM_UNI':32, 
+          'DIM_BI':16,
+          'DIM_WORD':16,
+          'DIM_CTYPE':8,
+          'DIM_TAGEMB':16,
+          'DIM_HIDDEN':100,
+          'LEARNING_RATE':0.075,
+          'DROPOUT_RATE':0.2,
+
+          'TRAINSET':args.train,
+          'TESTSET':args.test,
+          'DEVSET':args.dev,
+          'DICTIONARY':args.dict,
+
+          'HYPERPARAMS':'data/'+args.output+'.hp',
+          'MODEL':'data/'+args.output+'.model',
+          'VOCAB':'data/'+args.output+'.dict',
+          'EPOCH_MODEL':'data/epoch.model',
+
+          'TMP_PRED':'data/pred',
+          'TMP_GOLD':'data/gold'}
+
+    # Setup vocabuary files
+    vocabs = prepro.create_vocabs_from_trainset(trainset=hp['TRAINSET'],
+                                                fn_dictionary=hp['DICTIONARY'],
+                                                fn_vocabs=hp['VOCAB'])
+
+    # Update hyper-parameters
+    hp['VOCAB_SIZE_UNI']    = len(vocabs[0])
+    hp['VOCAB_SIZE_BI']     = len(vocabs[1])
+    hp['VOCAB_SIZE_WORD']   = len(vocabs[2])
+    hp['VOCAB_SIZE_POSTAG'] = len(vocabs[3])
+    # Preprocess
+    ws = hp['WINDOW_SIZE']
+    TrainData = prepro.from_file(filename=hp['TRAINSET'], window_size=ws, vocabs=vocabs)
+    TestData  = prepro.from_file(filename=hp['TESTSET'],  window_size=ws, vocabs=vocabs)
+    DevData   = prepro.from_file(filename=hp['DEVSET'],   window_size=ws, vocabs=vocabs)
+    # Construct networks
+    _model = model.Model(hp=hp)
+    # Start training
+    fit(hp, model=_model, train_data=TrainData, test_data=TestData, dev_data=DevData)
+
+
+
+def mecab_eval(fn_pred, fn_gold, 
+               mecab_system_eval_path='/usr/lib/mecab/mecab-system-eval'):
+    cmd  = [mecab_system_eval_path, fn_pred, fn_gold]
+    res  = subprocess.run(cmd, stdout=subprocess.PIPE)
+    res  = res.stdout.decode()
+    ws_f = float(res.split('\n')[1].split()[-1])
+    pt_f = float(res.split('\n')[2].split()[-1])
+    return ws_f, pt_f
+
+
+def evaluation(hp, fn_model, data):
+    tagger = Tagger(vocabs=hp['VOCAB'], params=fn_model, hp=hp['HYPERPARAMS'])
+
+    gold = open(hp['TMP_GOLD'], 'w')
+    pred = open(hp['TMP_PRED'], 'w')
+    indice = [i for i in range(len(data.ws_data))]
+    for i in indice:
+        words   = data.words[i]
+        pids    = data.pos_data[i][1]
+        postags = [tagger.id2pos[pid] for pid in pids]
+
+        for w, p in zip(words, postags):
+            gold.write(w+'\t'+p+'\n')
+        gold.write('EOS\n')
+
+        output      = tagger.tagging(''.join(words))
+        sys_words   = output.words
+        sys_postags = output.postags
+
+        for w, p in zip(sys_words, sys_postags):
+             pred.write(w+'\t'+p+'\n')
+        pred.write('EOS\n')
+
+    ws_f, pos_f = mecab_eval(hp['TMP_PRED'], hp['TMP_GOLD'])
+    return ws_f, pos_f
+
+
+def fit(hp, model, train_data, test_data, dev_data):
+    logs = ['Epoch', 'LR', 'Loss', 'Time(m)', 'DevWS', 'DevPOS', 'TestWS', 'TestPOS']
+    print(hp)
+    print('\t'.join(logs))
+    utils.dump_data(hp, hp['HYPERPARAMS'])
+
+    decay_counter  = 0
+    best_dev_score = 0.
+    indice = [i for i in range(len(train_data.ws_data))]
+    for e in range(hp['EPOCH']):
+        t = time.time()
+        losses = 0.
+        random.shuffle(indice)
+        for i in indice:
+            # Word Segmentation
+            X = train_data.ws_data[i][0]
+            Y = train_data.ws_data[i][1]
+            obs = model.encode_ws(X, train=True)
+            gold_score = model.score_sentence(obs, Y)
+            forward_score = model.forward(obs)
+            loss = forward_score-gold_score
+            # Update
+            loss.backward()
+            model.trainer.update()
+            losses += loss.value()
+
+            # POS-tagging
+            X = train_data.pos_data[i][0]
+            Y = train_data.pos_data[i][1]
+            loss = model. get_POStagging_loss(X, Y)
+            losses += loss.value()
+            # Update
+            loss.backward()
+            model.trainer.update()
+
+        model.model.save(hp['EPOCH_MODEL'])
+        dev_ws_f, dev_pos_f = evaluation(hp, fn_model=hp['EPOCH_MODEL'], data=dev_data)
+
+        if dev_ws_f > best_dev_score:
+            best_dev_score = dev_ws_f
+            decay_counter = 0
+            model.model.save(hp['MODEL'])
+            test_ws_f, test_pos_f = evaluation(hp, fn_model=hp['MODEL'], data=test_data)
+        else:
+            decay_counter += 1
+            if decay_counter >= hp['DECAY']:
+                model.trainer.learning_rate = model.trainer.learning_rate/2
+                decay_counter = 0
+
+        logs = [e, model.trainer.learning_rate, losses, (time.time()-t)/60,
+                dev_ws_f, dev_pos_f, test_ws_f, test_pos_f]
+        print('\t'.join([log[:5] for log in map(str, logs)]))
+
+
+if __name__ == '__main__':
+    main()
