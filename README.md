@@ -19,11 +19,6 @@ Installation
 ========
 
 ```bash
-# From PyPI
-pip install https://test.pypi.org/simple nagisa
-```
-
-```bash
 # From github
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
