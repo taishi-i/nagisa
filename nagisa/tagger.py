@@ -66,9 +66,9 @@ class Tagger(object):
                 w2p = [0]
             if w.isalnum() is True:
                 if w2p == [0]:
-                    w2p = [self._pos2id['名詞']]
+                    w2p = [self._pos2id[u'名詞']]
                 else:
-                    w2p.append(self._pos2id['名詞'])
+                    w2p.append(self._pos2id[u'名詞'])
             w2p = list(set(w2p))
             tids.append(w2p)
 
