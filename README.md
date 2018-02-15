@@ -22,10 +22,9 @@ Installation
 # From github
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
-# If you got a permission denied error, 
-# please run the following line.
-# sudo python setup.py install
 python setup.py install
+# If you got a permission denied error, please run the following line.
+# sudo python setup.py install
 ```
 
 
