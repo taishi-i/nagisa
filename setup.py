@@ -36,7 +36,7 @@ setup(
     long_description = long_description,
     url = 'https://github.com/taishi-i/nagisa',
     download_url = 'https://github.com/taishi-i/nagisa/archive/0.0.1.tar.gz',
-    license = 'Apache',
+    license = 'MIT',
     platforms = 'Unix',
     install_requires = ['DyNet'],
     classifiers = classifiers,
