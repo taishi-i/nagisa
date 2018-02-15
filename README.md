@@ -22,9 +22,10 @@ Installation
 # From github
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
-python setup.py install
-# If you got a permission denied error, please run the following line.
+# If you got a permission denied error, 
+# please run the following line.
 # sudo python setup.py install
+python setup.py install
 ```
 
 
@@ -55,4 +56,22 @@ print(words) # Python/名詞 ツール/名詞
 # Filtering specific POS-tags from a text
 words = tagger.filter(text, ['助詞', '助動詞'])
 print(words) # Python/名詞 簡単/形状詞 使える/動詞 ツール/名詞
+```
+
+
+Feature
+====
+
+```python
+# Nagisa is good at capturing URLs and emoticons from a text.
+text = '(人•ᴗ•♡)こんばんは♪'
+words = tagger.tagging(text)
+print(words) # (人•ᴗ•♡)/補助記号 こんばんは/感動詞 ♪/補助記号
+
+url = 'https://github.com/taishi-i/nagisaでコードを公開中(๑¯ω¯๑)'
+words = tagger.tagging(url) 
+print(words) # https://github.com/taishi-i/nagisa/URL で/助詞 コード/名詞 を/助詞 公開/名詞 中/接尾辞 (๑　̄ω　̄๑)/補助記号
+
+words = tagger.filter(url, ['URL', '補助記号', '助詞'])
+print(words) # コード/名詞 公開/名詞 中/接尾辞
 ```

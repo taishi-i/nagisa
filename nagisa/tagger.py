@@ -58,7 +58,6 @@ class Tagger(object):
         cids = [utils.conv_tokens_to_ids([c for c in w], self._uni2id) for w in words]
         tids = []
         for w in words:
-            # lower setting: 1
             w = w.lower()
             if w in self._word2postags:
                 w2p = self._word2postags[w]
