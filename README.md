@@ -19,7 +19,12 @@ Installation
 ========
 
 ```bash
-# From github
+# from PyPI
+pip install nagisa
+```
+
+```bash
+# from github
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
 python setup.py install
