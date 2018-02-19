@@ -7,6 +7,5 @@ install:
     - pip install dynet
     - pip install numpy
     - pip install cython
-    - pip install nagisa
 script:
     - pytest
