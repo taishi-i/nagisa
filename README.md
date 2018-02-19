@@ -2,6 +2,8 @@
 
 # nagisa
 
+[![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
+
 Nagisa is a python module for Japanese word segmentation/POS-tagging.  
 It is designed to be a simple and easy-to-use tool.  
 
@@ -18,13 +20,13 @@ Nagisa is compatible with: Python 2.7-3.6.
 Installation
 ========
 
+Using pip
 ```bash
-# from PyPI
 pip install nagisa
 ```
 
+From github
 ```bash
-# from github
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
 python setup.py install
