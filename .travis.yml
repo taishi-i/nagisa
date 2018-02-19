@@ -1,0 +1,11 @@
+language: python
+python:
+    - 2.7
+    - 3.5
+    - 3.6
+install:
+    - pip install dynet
+    - pip install numpy
+    - pip install cython
+script:
+    - pytest
