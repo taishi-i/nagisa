@@ -40,9 +40,10 @@ class Tagger(object):
                                          bi2id=self._bi2id,
                                          dictionary=self._word2id,
                                          window_size=self._hp['WINDOW_SIZE'])
-        obs     = self._model.encode_ws(feats)
-        tags, _ = self._model.viterbi_decoding(obs)
-        words   = utils.segmenter_for_bmes(text, tags)
+        obs   = self._model.encode_ws(feats)
+        obs   = [ob.npvalue() for ob in obs] 
+        tags  = utils.np_viterbi(self._model.trans_array, obs)
+        words = utils.segmenter_for_bmes(text, tags)
         return words
 
 

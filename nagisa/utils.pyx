@@ -5,6 +5,7 @@ from __future__ import division, print_function, absolute_import
 import re
 import sys
 import gzip
+import numpy as np
 import unicodedata
 
 from six.moves import cPickle
@@ -242,3 +243,37 @@ cpdef dump_data(data, fn):
 cpdef load_data(fn):
     with gzip.open(fn, 'rb') as gf:
         return cPickle.load(gf)
+
+
+cpdef list np_viterbi(trans, observations):
+    cdef:
+        int idx, best_tag_id
+        list bptrs_t, vvars_t, backpointer, indice, best_path
+
+    for_expr = np.array([-1e10]*6)
+    for_expr[4] = 0 # sp_s = 4
+    indice = [0,1,2,3,4,5]
+    backpointer = []
+
+    for obs in observations:
+        bptrs_t = []
+        vvars_t = []
+        for idx in indice:
+            next_tag_expr = for_expr+trans[idx]
+            best_tag_id = np.argmax(next_tag_expr)
+            bptrs_t.append(best_tag_id)
+            vvars_t.append(next_tag_expr[best_tag_id])
+        for_expr = np.array(vvars_t) + obs
+        backpointer.append(bptrs_t)
+
+    terminal_expr = for_expr + trans[5] # sp_e = 5
+    best_tag_id = np.argmax(terminal_expr)
+    best_path = [best_tag_id]
+
+    for bptrs_t in reversed(backpointer):
+        best_tag_id = bptrs_t[best_tag_id]
+        best_path.append(best_tag_id)
+
+    best_path.pop()
+    best_path.reverse()
+    return best_path

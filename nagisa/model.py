@@ -70,6 +70,8 @@ class Model(object):
             model.populate(params)
         self.model = model
 
+        # As nparray
+        self.trans_array = self.trans.as_array()
 
     def encode_ws(self, X, train=False):
         dy.renew_cg()
