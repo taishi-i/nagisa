@@ -10,7 +10,11 @@ import nagisa.model as model
 base = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(base)
 
+
 class Tagger(object):
+    """
+    This class has a word segmentation function and a POS-tagging function for Japanese.
+    """
     def __init__(self, vocabs=base+'/data/nagisa_v001.dict',
                  params=base+'/data/nagisa_v001.model', 
                  hp=base+'/data/nagisa_v001.hp'):
@@ -49,9 +53,9 @@ class Tagger(object):
 
     def tagging(self, text):
         """
-        Return the words with POS tags of the given sentence.
+        Return the words with POS-tags of the given sentence.
         Input: str (a sentence)
-        Output: the object of the words with POS tags
+        Output: the object of the words with POS-tags
         """
         words = self.wakati(text)
 
@@ -78,6 +82,11 @@ class Tagger(object):
 
 
     def filter(self, text, filter_postags=[]):
+        """
+        Return the filtered words with POS-tags of the given sentence.
+        Input: str (a sentence)
+        Output: the object of the words with POS-tags
+        """
         words = []
         postags = []
         tokens = self.tagging(text)
@@ -88,7 +97,12 @@ class Tagger(object):
         return self._Token(text, words, postags)
 
 
-    def extract(self, text, filter_postags=[]):
+    def extract(self, text, extract_postags=[]):
+        """
+        Return the extracted words with POS-tags of the given sentence.
+        Input: str (a sentence)
+        Output: the object of the words with POS-tags
+        """
         words = []
         postags = []
         tokens = self.tagging(text)
