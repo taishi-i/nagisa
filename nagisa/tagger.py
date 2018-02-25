@@ -123,7 +123,7 @@ class Tagger(object):
         postags = []
         tokens  = self.tagging(text, lower)
         for word, postag in zip(tokens.words, tokens.postags):
-            if postag in filter_postags:
+            if postag in extract_postags:
                 words.append(word)
                 postags.append(postag)
         return self._Token(text, words, postags)
