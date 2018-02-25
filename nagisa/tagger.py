@@ -3,6 +3,7 @@
 from __future__ import division, print_function, absolute_import
 
 import os
+import re
 import sys
 import utils
 import nagisa.model as model
@@ -17,7 +18,8 @@ class Tagger(object):
     """
     def __init__(self, vocabs=base+'/data/nagisa_v001.dict',
                  params=base+'/data/nagisa_v001.model', 
-                 hp=base+'/data/nagisa_v001.hp'):
+                 hp=base+'/data/nagisa_v001.hp',
+                 single_word_list=None):
         # Load vocaburary files
         vocabs = utils.load_data(vocabs) 
         self._uni2id, self._bi2id, self._word2id, self._pos2id, self._word2postags = vocabs
@@ -29,35 +31,49 @@ class Tagger(object):
         # Construct a word segmentation model and a pos tagging model
         self._model = model.Model(self._hp, params)
 
+        # If a word is included in the single_word_list,
+        # it is recognized as a single word forcibly.
+        self.pattern = None
+        if single_word_list:
+            single_word_list = [utils.preprocess(w) for w in single_word_list if len(w) > 1] 
+            if len(single_word_list) > 0:
+                self.pattern = re.compile('|'.join(single_word_list))
 
-    def wakati(self, text):
+
+    def wakati(self, text, lower=False):
         """
         Return the words of the given sentence.
         Input: str (a sentence)
         Output: the list of the words
         """
-        text = utils.utf8rstrip(text)
-        text = utils.normalize(text)                                            
-        text = text.replace(' ', '　')
-        feats = utils.feature_extraction(text=text.lower(), 
+        text = utils.preprocess(text)
+        lower_text = text.lower()
+        feats = utils.feature_extraction(text=lower_text,
                                          uni2id=self._uni2id,
                                          bi2id=self._bi2id,
                                          dictionary=self._word2id,
                                          window_size=self._hp['WINDOW_SIZE'])
-        obs   = self._model.encode_ws(feats)
-        obs   = [ob.npvalue() for ob in obs] 
-        tags  = utils.np_viterbi(self._model.trans_array, obs)
-        words = utils.segmenter_for_bmes(text, tags)
+        obs  = self._model.encode_ws(feats)
+        obs  = [ob.npvalue() for ob in obs] 
+        tags = utils.np_viterbi(self._model.trans_array, obs)
+        if self.pattern:
+            for match in self.pattern.finditer(text):
+                span = match.span()
+                tags[span[0]:span[1]] = [0]+[1]*((span[1]-span[0])-2)+[2]
+        if lower is True:
+            words = utils.segmenter_for_bmes(lower_text, tags)
+        else:
+            words = utils.segmenter_for_bmes(text, tags)
         return words
 
 
-    def tagging(self, text):
+    def tagging(self, text, lower=False):
         """
         Return the words with POS-tags of the given sentence.
         Input: str (a sentence)
         Output: the object of the words with POS-tags
         """
-        words = self.wakati(text)
+        words = self.wakati(text, lower)
 
         wids = utils.conv_tokens_to_ids(words, self._word2id)
         cids = [utils.conv_tokens_to_ids([c for c in w], self._uni2id) for w in words]
@@ -81,15 +97,15 @@ class Tagger(object):
         return self._Token(text, words, postags)
 
 
-    def filter(self, text, filter_postags=[]):
+    def filter(self, text, lower=False, filter_postags=[]):
         """
         Return the filtered words with POS-tags of the given sentence.
         Input: str (a sentence)
         Output: the object of the words with POS-tags
         """
-        words = []
+        words   = []
         postags = []
-        tokens = self.tagging(text)
+        tokens  = self.tagging(text, lower)
         for word, postag in zip(tokens.words, tokens.postags):
             if not postag in filter_postags:
                 words.append(word)
@@ -97,15 +113,15 @@ class Tagger(object):
         return self._Token(text, words, postags)
 
 
-    def extract(self, text, extract_postags=[]):
+    def extract(self, text, lower=False, extract_postags=[]):
         """
         Return the extracted words with POS-tags of the given sentence.
         Input: str (a sentence)
         Output: the object of the words with POS-tags
         """
-        words = []
+        words   = []
         postags = []
-        tokens = self.tagging(text)
+        tokens  = self.tagging(text, lower)
         for word, postag in zip(tokens.words, tokens.postags):
             if postag in filter_postags:
                 words.append(word)

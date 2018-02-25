@@ -38,6 +38,13 @@ cpdef unicode normalize(unicode text):
     return unicodedata.normalize('NFKC', text)
 
 
+cpdef unicode preprocess(text): 
+    text = utf8rstrip(text)
+    text = normalize(text)
+    text = text.replace(' ', '　')
+    return text
+
+
 cpdef list get_unigram(unicode text):
     cdef unicode uni
     return [uni for uni in text]
