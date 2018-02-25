@@ -1,2 +1,2 @@
 recursive-include nagisa/data *
-recursive-include nagisa/*.pyx
+recursive-include nagisa *.pyx
