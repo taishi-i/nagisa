@@ -71,7 +71,7 @@ print(tagger.postags) # ['補助記号', '名詞', ... , 'URL']
 
 ```
 
-A word recognized as a single word forcibly.
+A word can be recognized as a single word forcibly.
 ```python
 text = 'ニューラルネットワークを使ってます。'
 print(tagger.tagging(text)) # ニューラル/名詞 ネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号
@@ -81,7 +81,7 @@ tagger_nn = nagisa.Tagger(single_word_list=['ニューラルネットワーク']
 print(tagger_nn.tagging(text)) # ニューラルネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号
 ```
 
-Nagisa is good at capturing URLs and emoticons from a text.
+Nagisa is good at capturing URLs and emoticons from an input text.
 ```python
 text = '(人•ᴗ•♡)こんばんは♪'
 words = tagger.tagging(text)
