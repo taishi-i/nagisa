@@ -91,7 +91,7 @@ url = 'https://github.com/taishi-i/nagisaでコードを公開中(๑¯ω¯๑)'
 words = tagger.tagging(url) 
 print(words) # https://github.com/taishi-i/nagisa/URL で/助詞 コード/名詞 を/助詞 公開/名詞 中/接尾辞 (๑　̄ω　̄๑)/補助記号
 
-words = tagger.filter(url, ['URL', '補助記号', '助詞'])
+words = tagger.filter(url, filter_postags=['URL', '補助記号', '助詞'])
 print(words) # コード/名詞 公開/名詞 中/接尾辞
 ```
 
