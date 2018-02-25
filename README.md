@@ -78,7 +78,7 @@ print(tagger.tagging(text)) # ニューラル/名詞 ネットワーク/名詞 �
 
 # If a word is included in the single_word_list, it is recognized as a single word. 
 tagger_nn = nagisa.Tagger(single_word_list=['ニューラルネットワーク'])
-print(tagger_nn.tagging(text)) ニューラルネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号
+print(tagger_nn.tagging(text)) # ニューラルネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号
 ```
 
 Nagisa is good at capturing URLs and emoticons from a text.
@@ -89,7 +89,7 @@ print(words) # (人•ᴗ•♡)/補助記号 こんばんは/感動詞 ♪/補�
 
 url = 'https://github.com/taishi-i/nagisaでコードを公開中(๑¯ω¯๑)'
 words = tagger.tagging(url) 
-print(words) # https://github.com/taishi-i/nagisa/URL で/助詞 コード/名詞 を/助詞 公開/名詞 中/接尾辞 (๑　̄ω　̄๑)/補助記号
+print(words.words) # https://github.com/taishi-i/nagisa/URL で/助詞 コード/名詞 を/助詞 公開/名詞 中/接尾辞 (๑　̄ω　̄๑)/補助記号
 
 words = tagger.filter(url, ['URL', '補助記号', '助詞'])
 print(words) # コード/名詞 公開/名詞 中/接尾辞
