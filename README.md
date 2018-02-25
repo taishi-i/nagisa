@@ -59,11 +59,11 @@ Features
 Output words can be controlled by POS-tags.
 ```python
 # Extarcting all nouns from a text
-words = tagger.extract(text, ['名詞'])
+words = tagger.extract(text, extract_postags=['名詞'])
 print(words) # Python/名詞 ツール/名詞
 
 # Filtering specific POS-tags from a text
-words = tagger.filter(text, ['助詞', '助動詞'])
+words = tagger.filter(text, filter_postags=['助詞', '助動詞'])
 print(words) # Python/名詞 簡単/形状詞 使える/動詞 ツール/名詞
 
 # A list of available POS-tags
@@ -89,7 +89,7 @@ print(words) # (人•ᴗ•♡)/補助記号 こんばんは/感動詞 ♪/補�
 
 url = 'https://github.com/taishi-i/nagisaでコードを公開中(๑¯ω¯๑)'
 words = tagger.tagging(url) 
-print(words.words) # https://github.com/taishi-i/nagisa/URL で/助詞 コード/名詞 を/助詞 公開/名詞 中/接尾辞 (๑　̄ω　̄๑)/補助記号
+print(words) # https://github.com/taishi-i/nagisa/URL で/助詞 コード/名詞 を/助詞 公開/名詞 中/接尾辞 (๑　̄ω　̄๑)/補助記号
 
 words = tagger.filter(url, ['URL', '補助記号', '助詞'])
 print(words) # コード/名詞 公開/名詞 中/接尾辞
