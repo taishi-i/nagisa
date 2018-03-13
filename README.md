@@ -13,6 +13,8 @@ This tool has the following features.
 - The word segmentation model uses character- and word-level features [[池田+]](http://www.anlp.jp/proceedings/annual_meeting/2017/pdf_dir/B6-2.pdf).
 - The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
+<img src='/nagisa/data/models.jpg' width='640px'>
+
 Requirements
 ========
 [DyNet](https://github.com/clab/dynet) (Neural Network Toolkit) is required.  
