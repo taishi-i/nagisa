@@ -15,6 +15,8 @@ This tool has the following features.
 
 <img src='/nagisa/data/models.jpg' width='640px'>
 
+[Japanese (slideshare)](https://www.slideshare.net/100003383562829/rnn-90731229)
+
 Requirements
 ========
 [DyNet](https://github.com/clab/dynet) (Neural Network Toolkit) is required.  
