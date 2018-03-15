@@ -5,6 +5,8 @@
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
 
+[Japanese (slideshare)](https://www.slideshare.net/100003383562829/rnn-90731229)
+
 Nagisa is a python module for Japanese word segmentation/POS-tagging.  
 It is designed to be a simple and easy-to-use tool.  
 
@@ -14,8 +16,6 @@ This tool has the following features.
 - The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
 <img src='/nagisa/data/models.jpg' width='640px'>
-
-[Japanese (slideshare)](https://www.slideshare.net/100003383562829/rnn-90731229)
 
 Requirements
 ========
