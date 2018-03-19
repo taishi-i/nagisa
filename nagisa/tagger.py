@@ -24,7 +24,7 @@ class Tagger(object):
         vocabs = utils.load_data(vocabs) 
         self._uni2id, self._bi2id, self._word2id, self._pos2id, self._word2postags = vocabs
         self._id2pos = {v:k for k, v in self._pos2id.items()}
-        self.id2pos = self._id2pos
+        self.id2pos  = self._id2pos
         self.postags = [postag for postag in self._pos2id.keys()]
         # Load a hyper-parameter file
         self._hp = utils.load_data(hp)
@@ -56,10 +56,29 @@ class Tagger(object):
         obs  = self._model.encode_ws(feats)
         obs  = [ob.npvalue() for ob in obs] 
         tags = utils.np_viterbi(self._model.trans_array, obs)
+
+        # A word can be recognized as a single word forcibly.
         if self.pattern:
             for match in self.pattern.finditer(text):
                 span = match.span()
-                tags[span[0]:span[1]] = [0]+[1]*((span[1]-span[0])-2)+[2]
+                span_s = span[0]
+                span_e = span[1]
+                tags[span_s:span_e] = [0]+[1]*((span_e-span_s)-2)+[2]
+
+                if span_s != 0:
+                    previous_tag = tags[span_s-1]
+                    if previous_tag == 0:   # 0 is BEGIN tag
+                        tags[span_s-1] = 3  # 3 is SINGLE tag
+                    elif previous_tag == 1: # 1 is MIDDEL tag
+                        tags[span_s-1] = 2  # 2 is END tag
+
+                if span_e != len(text):
+                    next_tag = tags[span_e]
+                    if next_tag == 1:    # 1 is MIDDEL tag
+                        tags[span_e] = 0 # 0 is BEGIN tag
+                    elif next_tag == 2:  # 2 is END tag
+                        tags[span_e] = 3 # 3 is SINGLE tag
+
         if lower is True:
             words = utils.segmenter_for_bmes(lower_text, tags)
         else:

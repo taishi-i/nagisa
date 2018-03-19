@@ -160,23 +160,6 @@ cpdef dict load_dictionary(dict_path):
     return word_dict
 
 
-cpdef list make_tags_as_app_sep(unicode text):
-    cdef:
-        int i
-        int len_word
-        list tags  = []
-        list words = text.split(u' ')
-        unicode word
-    for word in words:
-        len_word = len(word)
-        if len_word == 1:
-            tags += [1]
-        else:
-            tags += [0 for i in range(len_word-1)] + [1]
-    assert len(''.join(words)) == len(tags)
-    return tags
-
-
 cpdef list make_tags_as_bmes(unicode text):
     cdef:
         int i
@@ -200,26 +183,6 @@ cpdef list make_tags_as_bmes(unicode text):
     assert len(''.join(words)) == len(tags)
     return tags
     
-
-cpdef list segmenter_for_app_sep(unicode chars, list tags):
-    cdef:
-        int tag
-        list words = []
-        list partical_word = []
-        unicode char
-        
-    assert len(chars) == len(tags)
-    for character, tag in zip(chars, tags):    
-        partical_word.append(character)
-        if tag == 0:
-            None
-        else:
-            words.append(''.join(partical_word))
-            partical_word = []
-    if len(partical_word) > 0:
-        words.append(''.join(partical_word))
-    return words
-
 
 cpdef list segmenter_for_bmes(unicode chars, list tags):
     cdef:
