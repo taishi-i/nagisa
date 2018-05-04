@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
 
-[Japanese (slideshare)](https://www.slideshare.net/100003383562829/rnn-90731229)
+[Japanese (言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから)](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.  
 It is designed to be a simple and easy-to-use tool.  
@@ -30,13 +30,13 @@ Using pip
 pip install nagisa
 ```
 
+or
+
 From github
 ```bash
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
 python setup.py install
-# If you got a permission denied error, please run the following line.
-# sudo python setup.py install
 ```
 
 Usage

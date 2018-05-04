@@ -95,7 +95,7 @@ class Tagger(object):
         words = self.wakati(text, lower)
 
         wids = utils.conv_tokens_to_ids(words, self._word2id)
-        cids = [utils.conv_tokens_to_ids([c for c in w], self._uni2id) for w in words]
+        cids = [utils.conv_tokens_to_ids([c for c in w.lower()], self._uni2id) for w in words]
         tids = []
         for w in words:
             w = w.lower()
