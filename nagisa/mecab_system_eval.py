@@ -28,10 +28,10 @@ def readFile(filename):
     return data
 
 
-def eval(system, answer):
+def mecab_eval(sys_data, ans_data):
     """
-        This script is written by refering to the following code.
-        https://github.com/taku910/mecab/blob/master/mecab/src/eval.cpp
+    This script is written by refering to the following code.
+    https://github.com/taku910/mecab/blob/master/mecab/src/eval.cpp
     """
     assert(len(sys_data) == len(ans_data))
     num_sents = len(sys_data)
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     dsc = "Reimplementation of mecab-system-eval \
            (https://github.com/taku910/mecab/blob/master/mecab/src/eval.cpp). \
            However, this script only evaluates on the word segmentation level \
-           and POS-tagging level."
+           and POS-tagging level. Input file format: Word\tPOS-tag"
 
     parser = argparse.ArgumentParser(description=dsc)
     parser.add_argument("-system", type=str, help="System output's file")
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     sys_data = readFile(args.system)
     ans_data = readFile(args.answer)
 
-    r = eval(sys_data, ans_data)
+    r = mecab_eval(sys_data, ans_data)
     print_eval(r)

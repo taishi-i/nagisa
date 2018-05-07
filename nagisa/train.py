@@ -12,6 +12,7 @@ import subprocess
 import numpy as np
 import dynet as dy
 
+import mecab_system_eval
 from tagger import Tagger
 
 parser = argparse.ArgumentParser()
@@ -47,10 +48,8 @@ def main():
           'HYPERPARAMS':'data/'+args.output+'.hp',
           'MODEL':'data/'+args.output+'.model',
           'VOCAB':'data/'+args.output+'.dict',
-          'EPOCH_MODEL':'data/epoch.model',
 
-          'TMP_PRED':'data/pred',
-          'TMP_GOLD':'data/gold'}
+          'EPOCH_MODEL':'data/epoch.model'}
 
     # Setup vocabuary files
     vocabs = prepro.create_vocabs_from_trainset(trainset=hp['TRAINSET'],
@@ -73,48 +72,44 @@ def main():
     fit(hp, model=_model, train_data=TrainData, test_data=TestData, dev_data=DevData)
 
 
-
-def mecab_eval(fn_pred, fn_gold, 
-               mecab_system_eval_path='/usr/lib/mecab/mecab-system-eval'):
-    cmd  = [mecab_system_eval_path, fn_pred, fn_gold]
-    res  = subprocess.run(cmd, stdout=subprocess.PIPE)
-    res  = res.stdout.decode()
-    ws_f = float(res.split('\n')[1].split()[-1])
-    pt_f = float(res.split('\n')[2].split()[-1])
-    return ws_f, pt_f
-
-
 def evaluation(hp, fn_model, data):
     tagger = Tagger(vocabs=hp['VOCAB'], params=fn_model, hp=hp['HYPERPARAMS'])
 
-    gold = open(hp['TMP_GOLD'], 'w')
-    pred = open(hp['TMP_PRED'], 'w')
-    indice = [i for i in range(len(data.ws_data))]
+    def data_for_eval(words, postags):
+        sent = []
+        for w, p in zip(words, postags):
+            p = w+"\t"+p
+            if mecab_system_eval.PY_3 is True:
+                w = w.encode("UTF-8")
+                p = p.encode("UTF-8")
+            sent.append([w, p])
+        return sent
+
+    sys_data = []
+    ans_data = []
+    indice   = [i for i in range(len(data.ws_data))]
     for i in indice:
         words   = data.words[i]
         pids    = data.pos_data[i][1]
         postags = [tagger.id2pos[pid] for pid in pids]
-
-        for w, p in zip(words, postags):
-            gold.write(w+'\t'+p+'\n')
-        gold.write('EOS\n')
+        ans_data.append(data_for_eval(words, postags))
 
         output      = tagger.tagging(''.join(words))
         sys_words   = output.words
         sys_postags = output.postags
+        sys_data.append(data_for_eval(sys_words, sys_postags))
 
-        for w, p in zip(sys_words, sys_postags):
-             pred.write(w+'\t'+p+'\n')
-        pred.write('EOS\n')
-
-    ws_f, pos_f = mecab_eval(hp['TMP_PRED'], hp['TMP_GOLD'])
+    r = mecab_system_eval.mecab_eval(sys_data, ans_data)
+    _, _, ws_f, _, _, pos_f = mecab_system_eval.calculate_fvalues(r)
     return ws_f, pos_f
 
 
 def fit(hp, model, train_data, test_data, dev_data):
+    for k, v in hp.items():
+        print("[nagisa] "+k+":\t", v)
+
     logs = ['Epoch', 'LR', 'Loss', 'Time(m)', 'DevWS', 'DevPOS', 'TestWS', 'TestPOS']
-    print(hp)
-    print('\t'.join(logs))
+    print('\n'+'\t'.join(logs))
     utils.dump_data(hp, hp['HYPERPARAMS'])
 
     decay_counter  = 0
@@ -140,7 +135,7 @@ def fit(hp, model, train_data, test_data, dev_data):
             # POS-tagging
             X = train_data.pos_data[i][0]
             Y = train_data.pos_data[i][1]
-            loss = model. get_POStagging_loss(X, Y)
+            loss = model.get_POStagging_loss(X, Y)
             losses += loss.value()
             # Update
             loss.backward()
