@@ -25,6 +25,32 @@ args = parser.parse_args()
 
 
 def main():
+    """
+    usage: python train.py -train <train_file> -dev <dev_file> -test <test_file> \
+                           -dict <dictionary_file> -output <model_name>
+
+    file format (train_file, dev_file, test_file):
+
+        word\tPOS-tag
+        word\tPOS-tag
+        word\tPOS-tag
+        EOS
+        word\tPOS-tag
+        word\tPOS-tag
+        ...
+        word\tPOS-tag
+        EOS
+        
+
+    file format (dictionary_file):
+        
+        word\tPOS-tag
+        word\tPOS-tag
+        word\tPOS-tag
+        ...
+    
+    """
+
     # Set hyperparameters
     hp = {'LAYERS':1,
           'THRESHOLD':2, 

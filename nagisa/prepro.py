@@ -75,7 +75,7 @@ def create_vocabs_from_trainset(trainset, threshold=2,
                 words = []
 
             else:
-                word, pos = text.split('-')
+                word, pos = text.split('\t')
                 word = utils.normalize(word)
                 word = word.replace(' ', '　')
                 # lower setting: 2
@@ -137,7 +137,7 @@ class from_file(object):
                     ptags = []
 
                 else:
-                    word, pos = text.split('-')
+                    word, pos = text.split('\t')
                     word = utils.normalize(word)
                     word = word.replace(' ', '　')
                     # lower setting: 3
