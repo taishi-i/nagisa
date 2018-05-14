@@ -41,8 +41,6 @@ Nagisa is compatible with: Python 2.7-3.6.
 pip install nagisa
 ```
 
-or
-
 - From github
 ```bash
 git clone https://github.com/taishi-i/nagisa
