@@ -19,20 +19,31 @@ This tool has the following features.
 
 Requirements
 ========
-[DyNet](https://github.com/clab/dynet) (Neural Network Toolkit) is required.  
-Nagisa is compatible with: Python 2.7-3.6.
+- [NumPy](http://www.numpy.org/)
+- [Cython](http://cython.org/)
+- [DyNet](https://github.com/clab/dynet)
+
+If you have not installed the above libraries,
+please execute the following command before installing this tool.
+
+```bash
+pip install cython
+pip install numpy
+pip install dynet
+```
 
 Installation
 ========
+Nagisa is compatible with: Python 2.7-3.6.
 
-Using pip
+- Using pip
 ```bash
 pip install nagisa
 ```
 
 or
 
-From github
+- From github
 ```bash
 git clone https://github.com/taishi-i/nagisa
 cd nagisa
