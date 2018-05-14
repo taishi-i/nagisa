@@ -21,7 +21,7 @@ Requirements
 ========
 - [NumPy](http://www.numpy.org/)
 - [Cython](http://cython.org/)
-- [DyNet](https://github.com/clab/dynet) The Dynamic Neural Network Toolkit
+- [DyNet](https://github.com/clab/dynet) (The Dynamic Neural Network Toolkit)
 
 If you have not installed the above libraries,  
 please execute the following command before installing this tool.
