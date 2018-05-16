@@ -2,14 +2,9 @@
 
 import os
 import sys
-import numpy
 
 from setuptools import setup
 from setuptools.extension import Extension
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext
-
-sys.path.append('test')
 
 with open('README.md') as f:
     long_description = f.read()
@@ -25,7 +20,30 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules'
 ]
 
-extensions = [Extension('utils', ['nagisa/utils.pyx'])]
+class defer_cythonize(list):
+    def __init__(self, callback):
+        self._list, self.callback = None, callback
+
+    def c_list(self):
+        if self._list is None:
+            self._list = self.callback()
+        return self._list
+
+    def __iter__(self):
+        for elem in self.c_list():
+            yield elem
+
+    def __getitem__(self, ii):
+        return self.c_list()[ii]
+
+    def __len__(self):
+        return len(self.c_list())
+
+def extensions():
+    from Cython.Build import cythonize
+    import numpy
+    extensions = [Extension('utils', ['nagisa/utils.pyx'],include_dirs = [numpy.get_include()])]
+    return cythonize(extensions)
 
 setup(
     name = 'nagisa',
@@ -39,11 +57,14 @@ setup(
     download_url = 'https://github.com/taishi-i/nagisa/archive/0.0.6.tar.gz',
     license = 'MIT License',
     platforms = 'Unix',
-    install_requires = ['DyNet'],
+    setup_requires=[
+                    'six',
+                    'cython',
+                    'numpy',
+                   ],
+    install_requires = ['numpy','DyNet'],
     classifiers = classifiers,
     include_package_data = True,
-    test_suite = 'nagisa_test.suite',
-    cmdclass = {"build_ext" : build_ext}, 
-    ext_modules = cythonize(extensions),
-    include_dirs = [numpy.get_include()],
+    test_suite = 'test.nagisa_test.suite',
+    ext_modules = defer_cythonize(extensions)
 )
