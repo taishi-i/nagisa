@@ -17,13 +17,11 @@ This tool has the following features.
 
 <img src='/nagisa/data/models.jpg' width='640px'>
 
-Requirements
-========
-- [DyNet](https://github.com/clab/dynet)(Neural Network Toolkit)
 
 Installation
 ========
 Nagisa is compatible with: Python 2.7-3.6.
+This tool uses [DyNet](https://github.com/clab/dynet) (Dynamic Neural Network Toolkit).
 
 - Using pip
 ```bash
