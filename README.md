@@ -1,5 +1,6 @@
 ![Alt text](/nagisa/data/nagisa_image.jpg 'An image of title')
 
+nagisa: a Japanese tokenizer for NLP beginner
 # 
 
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
@@ -20,8 +21,8 @@ This tool has the following features.
 
 Installation
 ========
-Nagisa is compatible with: Python 2.7-3.6.
-This tool uses [DyNet](https://github.com/clab/dynet) (Dynamic Neural Network Toolkit).
+Nagisa is compatible with: Python 2.7-3.6.  
+This tool uses [DyNet](https://github.com/clab/dynet) (Dynamic Neural Network Toolkit) to calcucate neural networks.
 
 - Using pip
 ```bash
@@ -51,6 +52,7 @@ print(words)
 # Get a list of words
 print(words.words) 
 #=> ['Python', 'で', '簡単', 'に', '使える', 'ツール', 'です']
+
 # Get a list of POS-tags
 print(words.postags) 
 #=> ['名詞', '助詞', '形状詞', '助動詞', '動詞', '名詞', '助動詞']
