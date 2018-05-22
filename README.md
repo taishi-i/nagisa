@@ -1,7 +1,7 @@
+<img src='/nagisa/data/nagisa_image.jpg' width='240'>
+
 nagisa: a Japanese tokenizer for NLP beginner
 ========
-
-<img src='/nagisa/data/nagisa_image.jpg' width='240'>
 
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
