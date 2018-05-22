@@ -1,12 +1,12 @@
-![Alt text](/nagisa/data/nagisa_image.jpg 'An image of title')
-
 nagisa: a Japanese tokenizer for NLP beginner
 ========
+
+<img src='/nagisa/data/nagisa_image.jpg' width='240'>
 
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
 
-[Japanese (言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから)](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
+[For Japanese (言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから)](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.  
 It is designed to be a simple and easy-to-use tool.  
@@ -73,7 +73,7 @@ print(words)
 #=> Python/名詞 簡単/形状詞 使える/動詞 ツール/名詞
 
 # A list of available POS-tags
-print(tagger.postags) 
+print(nagisa.tagger.postags) 
 #=> ['補助記号', '名詞', ... , 'URL']
 
 ```
