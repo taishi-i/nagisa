@@ -1,7 +1,7 @@
 import utils
 from nagisa.tagger import Tagger
 
-version = '0.0.7'
+version = '0.0.8'
 # Initialize instance
 tagger  = Tagger()
 # Functions
