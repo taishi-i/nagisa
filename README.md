@@ -4,6 +4,7 @@ nagisa: a Japanese tokenizer for NLP beginner
 ========
 
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
+[![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
 
 [For Japanese (言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから)](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
