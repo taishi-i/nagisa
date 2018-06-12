@@ -1,7 +1,5 @@
 <img src='/nagisa/data/nagisa_image.jpg' width='240'>
 
-========
-
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
@@ -20,7 +18,8 @@ This tool has the following features.
 
 
 Installation
-========
+============
+
 Nagisa is compatible with: Python 2.7-3.6.  
 This tool uses [DyNet](https://github.com/clab/dynet) (Dynamic Neural Network Toolkit) to calcucate neural networks.
 
@@ -37,7 +36,7 @@ python setup.py install
 ```
 
 Usage
-====
+=====
 
 ```python
 import nagisa
@@ -58,7 +57,7 @@ print(words.postags)
 ```
 
 Functions
-====
+=========
 
 - Output words can be controlled by POS-tags.
 ```python
