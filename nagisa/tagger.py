@@ -16,10 +16,15 @@ class Tagger(object):
     """
     This class has a word segmentation function and a POS-tagging function for Japanese.
     """
-    def __init__(self, vocabs=base+'/data/nagisa_v001.dict',
-                 params=base+'/data/nagisa_v001.model', 
-                 hp=base+'/data/nagisa_v001.hp',
-                 single_word_list=None):
+
+    def __init__(self, vocabs=None, params=None, hp=None, single_word_list=None):
+        if vocabs is None:
+            vocabs = base + '/data/nagisa_v001.dict'
+        if params is None:
+            params = base + '/data/nagisa_v001.model'
+        if hp is None:
+            hp = base + '/data/nagisa_v001.hp'
+
         # Load vocaburary files
         vocabs = utils.load_data(vocabs) 
         self._uni2id, self._bi2id, self._word2id, self._pos2id, self._word2postags = vocabs
@@ -41,10 +46,15 @@ class Tagger(object):
 
 
     def wakati(self, text, lower=False):
-        """
-        Return the words of the given sentence.
-        Input: str (a sentence)
-        Output: the list of the words
+        """Return the words of the given sentence.
+
+        args:
+            - text (str): An input sentence.
+            - lower (bool): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+
+        return:
+            - words (list): A list of the words.
         """
         text = utils.preprocess(text)
         lower_text = text.lower()
@@ -87,10 +97,14 @@ class Tagger(object):
 
 
     def tagging(self, text, lower=False):
-        """
-        Return the words with POS-tags of the given sentence.
-        Input: str (a sentence)
-        Output: the object of the words with POS-tags
+        """ Return the words with POS-tags of the given sentence.
+
+        args:
+            - text (str): An input sentence.
+            - lower (bool): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+        return:
+            - object : The object of the words with POS-tags.
         """
         words = self.wakati(text, lower)
 
@@ -117,10 +131,17 @@ class Tagger(object):
 
 
     def filter(self, text, lower=False, filter_postags=[]):
-        """
-        Return the filtered words with POS-tags of the given sentence.
-        Input: str (a sentence)
-        Output: the object of the words with POS-tags
+        """Return the filtered words with POS-tags of the given sentence.
+
+        args:
+            - text (str): An input sentence.
+            - lower (bool): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+            - filter_postags (list): Filtering the word with the POS-tag in \
+                                     filter_postags from a text.
+
+        return:
+            - object : The object of the words with POS-tags.
         """
         words   = []
         postags = []
@@ -133,10 +154,18 @@ class Tagger(object):
 
 
     def extract(self, text, lower=False, extract_postags=[]):
-        """
-        Return the extracted words with POS-tags of the given sentence.
-        Input: str (a sentence)
-        Output: the object of the words with POS-tags
+        """Return the extracted words with POS-tags of the given sentence.
+
+        args:
+            - text (str): An input sentence.
+            - lower (bool): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+            - filter_postags (list): Extracting the word with the POS-tag in \
+                                     filter_postags from a text.
+
+        return:
+            - object : The object of the words with POS-tags.
+
         """
         words   = []
         postags = []
