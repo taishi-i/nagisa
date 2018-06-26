@@ -18,7 +18,7 @@ Installation
 =============
 
 Nagisa is compatible with: Python 2.7-3.6.  
-This tool uses [DyNet](https://github.com/clab/dynet) (Dynamic Neural Network Toolkit) to calcucate neural networks.
+This tool uses [DyNet](https://github.com/clab/dynet) (the Dynamic Neural Network Toolkit) to calcucate neural networks.
 
 - Using pip
 ```bash
@@ -54,6 +54,7 @@ print(words.postags)
 
 # Nagisa gives you a simple word segmentation method.
 words = nagisa.wakati(text)
+print(words) 
 #=> ['Python', 'で', '簡単', 'に', '使える', 'ツール', 'です']
 ```
 
