@@ -1,5 +1,4 @@
 <p align="center"><img width="50%" src="/nagisa/data/nagisa_image.jpg"/></p>
-
 --------------------------------------------------------------------------------
 
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
