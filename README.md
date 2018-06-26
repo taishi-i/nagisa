@@ -1,4 +1,4 @@
-<p align="center"><img width="25%" src="/nagisa/data/nagisa_image.jpg"/></p>
+<p align="center"><img width="50%" src="/nagisa/data/nagisa_image.jpg"/></p>
 
 --------------------------------------------------------------------------------
 
@@ -115,3 +115,5 @@ More information for users
 
 - Model architectures
 <img src='/nagisa/data/models.jpg' width='640px'>
+
+- Documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
