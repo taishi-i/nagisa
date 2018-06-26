@@ -24,14 +24,13 @@ Installation
 Python 2.7.x or 3.5+ is required.  
 This tool uses [DyNet](https://github.com/clab/dynet) (the Dynamic Neural Network Toolkit) to calcucate neural networks.  
 You can install nagisa by using the following command.
-
 ```bash
 pip install nagisa
 ```
 
 Usage
 ======
-
+Basic usage;
 ```python
 import nagisa
 
@@ -55,6 +54,8 @@ print(words)
 #=> ['Python', 'で', '簡単', 'に', '使える', 'ツール', 'です']
 ```
 
+
+Post processing functions;
 ```python
 # Extarcting all nouns from a text 
 words = nagisa.extract(text, extract_postags=['名詞']) 
@@ -70,17 +71,15 @@ print(words)
 print(nagisa.tagger.postags)   
 #=> ['補助記号', '名詞', ... , 'URL']
 
-
 # A word can be recognized as a single word forcibly.   
 text = 'ニューラルネットワークを使ってます。'  
 print(nagisa.tagging(text))    
 #=> ニューラル/名詞 ネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号  
-   
+
 # If a word is included in the single_word_list, it is recognized as a single word.    
 tagger_nn = nagisa.Tagger(single_word_list=['ニューラルネットワーク']) 
 print(tagger_nn.tagging(text))     
 #=> ニューラルネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号
-
 
 # Nagisa is good at capturing the URLs and kaomoji from an input text.
 url = 'https://github.com/taishi-i/nagisaでコードを公開中(๑¯ω¯๑)'   
