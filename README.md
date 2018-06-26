@@ -14,6 +14,10 @@ This tool has the following features.
 - The word segmentation model uses character- and word-level features [[池田+]](http://www.anlp.jp/proceedings/annual_meeting/2017/pdf_dir/B6-2.pdf).
 - The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
+For more details refer to the following links.
+- The Slide in Japanese is available [here](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP).
+- The Documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
+
 Installation
 =============
 
@@ -108,13 +112,3 @@ print(words)
 #=> コード/名詞 公開/名詞 中/接尾辞
 ```
 
-More information for users
-===========================
-
-- Slides in Japanese  
-[言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
-
-- Model architectures
-<img src='/nagisa/data/models.jpg' width='640px'>
-
-- Documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
