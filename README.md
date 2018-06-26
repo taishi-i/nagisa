@@ -1,4 +1,4 @@
-<p align="center"><img width="50%" src="/nagisa/data/nagisa_image.jpg"/></p>
+<p align="center"><img width="25%" src="/nagisa/data/nagisa_image.jpg"/></p>
 
 --------------------------------------------------------------------------------
 
@@ -110,8 +110,8 @@ print(words)
 More information for users
 ===========================
 
-- Slides in Japanese
+- Slides in Japanese  
 [言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
 
-- Model architecture
+- Model architectures
 <img src='/nagisa/data/models.jpg' width='640px'>
