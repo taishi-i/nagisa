@@ -21,10 +21,10 @@ For more details refer to the following links.
 Installation
 =============
 
-Nagisa is compatible with: Python 2.7-3.6.  
-This tool uses [DyNet](https://github.com/clab/dynet) (the Dynamic Neural Network Toolkit) to calcucate neural networks.
+Python 2.7.x or 3.5+ is required.  
+This tool uses [DyNet](https://github.com/clab/dynet) (the Dynamic Neural Network Toolkit) to calcucate neural networks.  
+You can install nagisa by using the following command.
 
-- You can install nagisa by using the following command.
 ```bash
 pip install nagisa
 ```
