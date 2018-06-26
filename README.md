@@ -1,10 +1,10 @@
-<img src='/nagisa/data/nagisa_image.jpg' width='240'>
+<p align="center"><img width="50%" src="/nagisa/data/nagisa_image.jpg"/></p>
+
+--------------------------------------------------------------------------------
 
 [![Build Status](https://travis-ci.org/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
-
-[For Japanese (言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから)](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.  
 It is designed to be a simple and easy-to-use tool.  
@@ -14,11 +14,8 @@ This tool has the following features.
 - The word segmentation model uses character- and word-level features [[池田+]](http://www.anlp.jp/proceedings/annual_meeting/2017/pdf_dir/B6-2.pdf).
 - The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
-<img src='/nagisa/data/models.jpg' width='640px'>
-
-
 Installation
-============
+=============
 
 Nagisa is compatible with: Python 2.7-3.6.  
 This tool uses [DyNet](https://github.com/clab/dynet) (Dynamic Neural Network Toolkit) to calcucate neural networks.
@@ -36,7 +33,7 @@ python setup.py install
 ```
 
 Usage
-=====
+======
 
 ```python
 import nagisa
@@ -54,6 +51,10 @@ print(words.words)
 # Get a list of POS-tags
 print(words.postags) 
 #=> ['名詞', '助詞', '形状詞', '助動詞', '動詞', '名詞', '助動詞']
+
+# Nagisa gives you a simple word segmentation method.
+words = nagisa.wakati(text)
+#=> ['Python', 'で', '簡単', 'に', '使える', 'ツール', 'です']
 ```
 
 Functions
@@ -106,3 +107,11 @@ print(words)
 #=> コード/名詞 公開/名詞 中/接尾辞
 ```
 
+More information for users
+===========================
+
+- Slides in Japanese
+[言語処理学会第24回年次大会ワークショップ 形態素解析の今とこれから](https://drive.google.com/open?id=1AzR5wh5502u_OI_Jxwsq24t-er_rnJBP)
+
+- Model architecture
+<img src='/nagisa/data/models.jpg' width='640px'>
