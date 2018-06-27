@@ -6,8 +6,14 @@ import sys
 from setuptools import setup
 from setuptools.extension import Extension
 
-with open('README.md') as f:
-    long_description = f.read()
+
+try:
+    from pypandoc import convert
+    long_description = convert('README.md', 'rst')
+except ImportError:
+    with open('README.md') as f:
+        long_description = f.read()
+
 
 classifiers = [
     'License :: OSI Approved :: MIT License',
@@ -19,6 +25,7 @@ classifiers = [
     'Topic :: Text Processing :: Linguistic',
     'Topic :: Software Development :: Libraries :: Python Modules'
 ]
+
 
 class defer_cythonize(list):
     def __init__(self, callback):
@@ -52,11 +59,11 @@ setup(
     packages=['nagisa'],
     author = 'Taishi Ikeda',
     author_email = 'taishi.ikeda.0323@gmail.com',
-    version = '0.0.8',
-    description = 'Japanese word segmentation/POS tagging tool based on neural networks',
+    version = '0.0.9',
+    description = 'A Japanese tokenizer based on recurrent neural networks',
     long_description = long_description,
     url = 'https://github.com/taishi-i/nagisa',
-    download_url = 'https://github.com/taishi-i/nagisa/archive/0.0.8.tar.gz',
+    download_url = 'https://github.com/taishi-i/nagisa/archive/0.0.9.tar.gz',
     license = 'MIT License',
     platforms = 'Unix',
     setup_requires=['six', 'cython', 'numpy',],

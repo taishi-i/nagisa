@@ -48,7 +48,7 @@ print(words.words)
 print(words.postags) 
 #=> ['名詞', '助詞', '形状詞', '助動詞', '動詞', '名詞', '助動詞']
 
-# Nagisa gives you a simple word segmentation method.
+# The nagisa.wakati method is faster than the nagisa.tagging method.
 words = nagisa.wakati(text)
 print(words) 
 #=> ['Python', 'で', '簡単', 'に', '使える', 'ツール', 'です']

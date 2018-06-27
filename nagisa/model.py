@@ -4,7 +4,7 @@ from __future__ import division, print_function, absolute_import
 
 import numpy as np
 import dynet_config
-dynet_config.set(random_seed=1234)
+dynet_config.set(mem=32, random_seed=1234)
 import dynet as dy
 
 class Model(object):
