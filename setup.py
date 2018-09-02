@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import io
 import os
 import sys
 
@@ -11,8 +12,14 @@ try:
     from pypandoc import convert
     long_description = convert('README.md', 'rst')
 except ImportError:
-    with open('README.md') as f:
-        long_description = f.read()
+    if os.name == 'nt':
+        if sys.version_info.major == 2:
+            f = io.open(readme, 'r', encoding='utf_8_sig')
+        else:
+            f = open(readme, 'r', encoding='utf_8_sig')
+    else:
+        f = open(readme, 'r')
+    long_description = f.read()
 
 
 classifiers = [
@@ -22,6 +29,7 @@ classifiers = [
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Operating System :: Unix',
+    'Operating System :: Microsoft :: Windows',
     'Topic :: Text Processing :: Linguistic',
     'Topic :: Software Development :: Libraries :: Python Modules'
 ]
@@ -49,7 +57,7 @@ class defer_cythonize(list):
 def extensions():
     from Cython.Build import cythonize
     import numpy
-    extensions = [Extension('utils', 
+    extensions = [Extension('utils',
                   ['nagisa/utils.pyx'],
                   include_dirs = [numpy.get_include()])]
     return cythonize(extensions)
@@ -59,11 +67,11 @@ setup(
     packages=['nagisa'],
     author = 'Taishi Ikeda',
     author_email = 'taishi.ikeda.0323@gmail.com',
-    version = '0.0.9',
+    version = '0.1.0',
     description = 'A Japanese tokenizer based on recurrent neural networks',
     long_description = long_description,
     url = 'https://github.com/taishi-i/nagisa',
-    download_url = 'https://github.com/taishi-i/nagisa/archive/0.0.9.tar.gz',
+    download_url = 'https://github.com/taishi-i/nagisa/archive/0.1.0.tar.gz',
     license = 'MIT License',
     platforms = 'Unix',
     setup_requires=['six', 'cython', 'numpy',],
