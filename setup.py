@@ -7,10 +7,11 @@ import sys
 from setuptools import setup
 from setuptools.extension import Extension
 
+readme = 'README.md'
 
 try:
     from pypandoc import convert
-    long_description = convert('README.md', 'rst')
+    long_description = convert(readme, 'rst')
 except ImportError:
     if os.name == 'nt':
         if sys.version_info.major == 2:
