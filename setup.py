@@ -10,8 +10,8 @@ from setuptools.extension import Extension
 readme = 'README.md'
 
 try:
-    from pypandoc import convert
-    long_description = convert(readme, 'rst')
+    from pypandoc import convert_file
+    long_description = convert_file(readme, 'rst')
 except ImportError:
     if os.name == 'nt':
         if sys.version_info.major == 2:
