@@ -7,7 +7,9 @@ import dynet_config
 dynet_config.set(mem=32, random_seed=1234)
 import dynet as dy
 
+
 class Model(object):
+
     def __init__(self, hp, params=None):
         # Set hyperparameters.
         dim_uni      = hp['DIM_UNI']
@@ -39,7 +41,7 @@ class Model(object):
         # Create a bi-directional LSTM model for word segmentation.
         dim_ws_input  = (dim_uni+dim_bi+dim_ctype)*ws+dim_word*2
         self.ws_model = dy.BiRNNBuilder(layers, dim_ws_input, dim_hidden, model, dy.LSTMBuilder)
- 
+
         # Create a bi-directional LSTM model for POS-tagging.
         dim_pos_input  = dim_word+dim_uni+dim_tag_emb
         self.pos_model = dy.BiRNNBuilder(layers, dim_pos_input, dim_hidden, model, dy.LSTMBuilder)
@@ -59,7 +61,7 @@ class Model(object):
         self.dim_output = dim_output
         self.w_ws  = model.add_parameters((dim_output, dim_hidden))
         self.b_ws  = model.add_parameters(dim_output)
-        self.trans = model.add_lookup_parameters((dim_output, dim_output)) 
+        self.trans = model.add_lookup_parameters((dim_output, dim_output))
         self.w_pos = model.add_parameters((size_postags, dim_hidden))
         self.b_pos = model.add_parameters(size_postags)
         self.dim_word    = dim_word
@@ -73,10 +75,15 @@ class Model(object):
         # As nparray
         self.trans_array = self.trans.as_array()
 
+
     def encode_ws(self, X, train=False):
         dy.renew_cg()
-        w_ws = dy.parameter(self.w_ws)
-        b_ws = dy.parameter(self.b_ws)
+
+        # Remove dy.parameters(...) for DyNet v.2.1
+        #w_ws = dy.parameter(self.w_ws)
+        #b_ws = dy.parameter(self.b_ws)
+        w_ws = self.w_ws
+        b_ws = self.b_ws
 
         ipts = []
         length = len(X[0])
@@ -102,7 +109,7 @@ class Model(object):
         observations   = [w_ws*h+b_ws for h in bilstm_outputs]
         return observations
 
-    
+
     def forward(self, observations):
 
         def log_sum_exp(scores):
@@ -138,7 +145,7 @@ class Model(object):
         score = score + dy.pick(self.trans[self.sp_e], tags[-1])
         return score
 
-    
+
     def viterbi_decoding(self, observations):
         backpointers = []
         init_vvars   = [-1e10] * self.dim_output
@@ -172,13 +179,17 @@ class Model(object):
 
     def encode_pt(self, X, train=False):
         dy.renew_cg()
-        w_pos = dy.parameter(self.w_pos)
-        b_pos = dy.parameter(self.b_pos)
+
+        # Remove dy.parameters(...) for DyNet v.2.1
+        #w_pos = dy.parameter(self.w_pos)
+        #b_pos = dy.parameter(self.b_pos)
+        w_pos = self.w_pos
+        b_pos = self.b_pos
 
         ipts  = []
         length = len(X[0])
         for i in range(length):
-            cids = X[0][i] 
+            cids = X[0][i]
             wid  = X[1][i]
             tids = X[2][i]
             vec_char = self.char_seq_model.transduce([self.UNI[cid] for cid in cids])[-1]
@@ -197,13 +208,14 @@ class Model(object):
             else:
                 vec_word = self.WORD[wid]
 
-            vec_at_i = dy.concatenate([vec_word, vec_char, vec_tag]) 
+            vec_at_i = dy.concatenate([vec_word, vec_char, vec_tag])
             if train is True:
                 vec_at_i = dy.dropout(vec_at_i, self.dropout_rate)
             ipts.append(vec_at_i)
         hiddens = self.pos_model.transduce(ipts)
         probs = [dy.softmax(w_pos*h+b_pos) for h in hiddens]
         return probs
+
 
     def get_POStagging_loss(self, X, Y):
         losses = []
@@ -212,6 +224,7 @@ class Model(object):
             losses.append(-dy.log(dy.pick(prob, y)))
         loss = dy.esum(losses)
         return loss
+
 
     def POStagging(self, X):
         probs = self.encode_pt(X)
