@@ -30,12 +30,12 @@ def readFile(filename):
 
 def mecab_eval(sys_data, ans_data):
     """
-    This script is written by refering to the following code.
+    This script is written by referring to the following code.
     https://github.com/taku910/mecab/blob/master/mecab/src/eval.cpp
     """
     assert(len(sys_data) == len(ans_data))
     num_sents = len(sys_data)
-    
+
     prec = 0
     recall = 0
     num_correct = [0, 0]
@@ -46,7 +46,7 @@ def mecab_eval(sys_data, ans_data):
         l_ans = 0
         sys_sent = sys_data[i]
         ans_sent = ans_data[i]
-        
+
         while ((i_sys < len(sys_sent)) & (i_ans < len(ans_sent))):
             if (l_sys == l_ans):
                 if (sys_sent[i_sys][0] == ans_sent[i_ans][0]):
@@ -73,7 +73,7 @@ def mecab_eval(sys_data, ans_data):
         while (i_sys < len(sys_sent)):
             i_sys  += 1
             prec   += 1
-        
+
         while (i_ans < len(ans_sent)):
             i_ans  += 1
             recall += 1
