@@ -97,16 +97,7 @@ class Tagger(object):
         return words
 
 
-    def postagging(self, words, lower=False):
-        """ Return the words with POS-tags of the given words.
-
-        args:
-            - words (list): Input words.
-            - lower (bool): If lower is True, all uppercase characters in a list \
-                            of the words are converted into lowercase characters.
-        return:
-            - object : The object of the words with POS-tags.
-        """
+    def _postagging(self, words, lower=False):
         if lower is True:
             words = [w.lower() for w in words]
 
@@ -131,6 +122,22 @@ class Tagger(object):
         return postags
 
 
+    def postagging(self, words, lower=False):
+        """ Return the words with POS-tags of the given words.
+
+        args:
+            - words (list): Input words.
+            - lower (bool): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+        return:
+            - object : The object of the words with POS-tags.
+        """
+        words = [utils.preprocess(w) for w in words]
+        postags = self._postagging(words, lower)
+        return postags
+
+
+
     def tagging(self, text, lower=False):
         """ Return the words with POS-tags of the given sentence.
 
@@ -142,7 +149,7 @@ class Tagger(object):
             - object : The object of the words with POS-tags.
         """
         words = self.wakati(text, lower)
-        postags = self.postagging(words, lower)
+        postags = self._postagging(words, lower)
         return self._Token(text, words, postags)
 
 
