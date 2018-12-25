@@ -6,20 +6,20 @@ import nagisa
 
 class TestNagisa(unittest.TestCase):
     def test_tagging(self):
-        # test_1 
+        # test_1
         text   = 'Pythonで簡単に使えるツールです'
         output = 'Python/名詞 で/助詞 簡単/形状詞 に/助動詞 使える/動詞 ツール/名詞 です/助動詞'
         words = nagisa.tagging(text)
         self.assertEqual(output, str(words))
 
         # test_2
-        text   = 'ニューラルネットワークを使ってます。' 
+        text   = 'ニューラルネットワークを使ってます。'
         output = 'ニューラル/名詞 ネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号'
         self.assertEqual(output, str(nagisa.tagging(text)))
 
-        
+
         # test_3
-        tagger_nn = nagisa.Tagger(single_word_list=['ニューラルネットワーク'])
+        tagger_nn = nagisa.Tagger(single_word_list=['ニューラルネットワーク', "ニューラルネット"])
         output = 'ニューラルネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号'
         self.assertEqual(output, str(tagger_nn.tagging(text)))
 
