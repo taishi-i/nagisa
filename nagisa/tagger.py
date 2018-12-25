@@ -97,23 +97,23 @@ class Tagger(object):
         return words
 
 
-    def tagging(self, text, lower=False):
-        """ Return the words with POS-tags of the given sentence.
+    def postagging(self, words, lower=False):
+        """ Return the words with POS-tags of the given words.
 
         args:
-            - text (str): An input sentence.
+            - words (list): Input words.
             - lower (bool): If lower is True, all uppercase characters in a list \
                             of the words are converted into lowercase characters.
         return:
             - object : The object of the words with POS-tags.
         """
-        words = self.wakati(text, lower)
+        if lower is True:
+            words = [w.lower() for w in words]
 
         wids = utils.conv_tokens_to_ids(words, self._word2id)
-        cids = [utils.conv_tokens_to_ids([c for c in w.lower()], self._uni2id) for w in words]
+        cids = [utils.conv_tokens_to_ids([c for c in w], self._uni2id) for w in words]
         tids = []
         for w in words:
-            w = w.lower()
             if w in self._word2postags:
                 w2p = self._word2postags[w]
             else:
@@ -128,6 +128,21 @@ class Tagger(object):
 
         X = [cids, wids, tids]
         postags = [self._id2pos[pid] for pid in self._model.POStagging(X)]
+        return postags
+
+
+    def tagging(self, text, lower=False):
+        """ Return the words with POS-tags of the given sentence.
+
+        args:
+            - text (str): An input sentence.
+            - lower (bool): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+        return:
+            - object : The object of the words with POS-tags.
+        """
+        words = self.wakati(text, lower)
+        postags = self.postagging(words, lower)
         return self._Token(text, words, postags)
 
 

@@ -9,3 +9,4 @@ wakati  = tagger.wakati
 tagging = tagger.tagging
 filter  = tagger.filter
 extract = tagger.extract
+postagging = tagger.postagging
