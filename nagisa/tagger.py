@@ -46,7 +46,7 @@ class Tagger(object):
                 self.pattern = re.compile('|'.join(single_word_list))
 
         # If use_noun_heuristic is True, nouns are more lilely to appear.
-        if '名詞' in self._pos2id:
+        if u'名詞' in self._pos2id:
             self.use_noun_heuristic = True
         else:
             self.use_noun_heuristic = False

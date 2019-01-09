@@ -139,7 +139,7 @@ class from_file(object):
         self.filename = filename
         uni2id, bi2id, word2id, pos2id, word2postags = vocabs
 
-        if '名詞' in pos2id:
+        if u'名詞' in pos2id:
             self.use_noun_heuristic = True
         else:
             self.use_noun_heuristic = False
@@ -187,9 +187,9 @@ class from_file(object):
                     if self.use_noun_heuristic is True:
                         if word.isalnum() is True:
                             if w2p == [0]:
-                                w2p = [pos2id['名詞']]
+                                w2p = [pos2id[u'名詞']]
                             else:
-                                w2p.append(pos2id['名詞'])
+                                w2p.append(pos2id[u'名詞'])
 
                     w2p = list(set(w2p))
                     ptags.append(w2p)
