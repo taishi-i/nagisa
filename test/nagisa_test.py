@@ -41,11 +41,15 @@ class TestNagisa(unittest.TestCase):
         postags = nagisa.postagging(words)
         self.assertEqual(output, postags)
 
+        # test_7
+        postags = nagisa.decode(words)
+        self.assertEqual(output, postags)
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.makeSuite(TestNagisa))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main()

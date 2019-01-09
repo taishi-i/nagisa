@@ -10,7 +10,7 @@ import dynet as dy
 
 class Model(object):
 
-    def __init__(self, hp, params=None):
+    def __init__(self, hp, params=None, embs=None):
         # Set hyperparameters.
         dim_uni      = hp['DIM_UNI']
         dim_bi       = hp['DIM_BI']
@@ -34,7 +34,10 @@ class Model(object):
         # These models share the unigram, bigramn and word embedding matrix.
         self.UNI   = model.add_lookup_parameters((size_uni, dim_uni))
         self.BI    = model.add_lookup_parameters((size_bi, dim_bi))
-        self.WORD  = model.add_lookup_parameters((size_word, dim_word))
+        if embs is not None:
+            self.WORD  = model.add_lookup_parameters((size_word, dim_word), embs)
+        else:
+            self.WORD  = model.add_lookup_parameters((size_word, dim_word))
         self.CTYPE = model.add_lookup_parameters((7, dim_ctype))
         self.POS   = model.add_lookup_parameters((size_postags, dim_tag_emb))
 

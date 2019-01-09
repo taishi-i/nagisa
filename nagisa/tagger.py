@@ -45,6 +45,12 @@ class Tagger(object):
             if len(single_word_list) > 0:
                 self.pattern = re.compile('|'.join(single_word_list))
 
+        # If use_noun_heuristic is True, nouns are more lilely to appear.
+        if '名詞' in self._pos2id:
+            self.use_noun_heuristic = True
+        else:
+            self.use_noun_heuristic = False
+
 
     def wakati(self, text, lower=False):
         """Return the words of the given sentence.
@@ -109,11 +115,12 @@ class Tagger(object):
                 w2p = self._word2postags[w]
             else:
                 w2p = [0]
-            if w.isalnum() is True:
-                if w2p == [0]:
-                    w2p = [self._pos2id[u'名詞']]
-                else:
-                    w2p.append(self._pos2id[u'名詞'])
+            if self.use_noun_heuristic is True:
+                if w.isalnum() is True:
+                    if w2p == [0]:
+                        w2p = [self._pos2id[u'名詞']]
+                    else:
+                        w2p.append(self._pos2id[u'名詞'])
             w2p = list(set(w2p))
             tids.append(w2p)
 
@@ -132,10 +139,23 @@ class Tagger(object):
         return:
             - object : The object of the words with POS-tags.
         """
+        return self.decode(words, lower)
+
+
+    def decode(self, words, lower=False):
+        """ Return the words with tags of the given words.
+
+        args:
+            - words (list): Input words.
+            - lower (bool, optional): If lower is True, all uppercase characters in a list \
+                            of the words are converted into lowercase characters.
+        return:
+            - object : The object of the words with tags.
+        """
+        assert type(words) == list, "Please input a list of words."
         words = [utils.preprocess(w) for w in words]
         postags = self._postagging(words, lower)
         return postags
-
 
 
     def tagging(self, text, lower=False):
