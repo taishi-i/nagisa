@@ -85,12 +85,21 @@ def mecab_eval(sys_data, ans_data):
 
 def calculate_fvalues(r):
     ws_c, pt_c, prec, recall = r
+
     ws_p = round(100*ws_c/prec, 4)
     ws_r = round(100*ws_c/recall, 4)
-    ws_f = round(2*ws_p*ws_r/(ws_p+ws_r), 4)
+    if ws_p+ws_r == 0:
+        ws_f = round(0., 4)
+    else:
+        ws_f = round(2*ws_p*ws_r/(ws_p+ws_r), 4)
+
     pt_p = round(100*pt_c/prec, 4)
     pt_r = round(100*pt_c/recall, 4)
-    pt_f = round(2*pt_p*pt_r/(pt_p+pt_r), 4)
+    if pt_p+pt_r == 0:
+        pt_f = round(0., 4)
+    else:
+        pt_f = round(2*pt_p*pt_r/(pt_p+pt_r), 4)
+
     return [ws_p, ws_r, ws_f, pt_p, pt_r, pt_f]
 
 
@@ -121,8 +130,8 @@ if __name__ == "__main__":
            and POS-tagging level. Input file format: Word\tPOS-tag"
 
     parser = argparse.ArgumentParser(description=dsc)
-    parser.add_argument("-system", type=str, help="System output's file")
-    parser.add_argument("-answer", type=str, help="Answer file")
+    parser.add_argument("--system", type=str, help="System output's file")
+    parser.add_argument("--answer", type=str, help="Answer file")
     args = parser.parse_args()
 
     sys_data = readFile(args.system)
