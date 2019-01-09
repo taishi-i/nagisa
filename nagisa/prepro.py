@@ -2,10 +2,39 @@
 
 from __future__ import division, print_function, absolute_import
 
+import numpy as np
+
 import utils
 
 OOV = utils.OOV
 PAD = utils.PAD
+
+
+def embedding_loader(fn_embedding, word2id, init_range=0.1):
+    # load a pre-trained embedding file (word2vec format)
+    word2vec = {}
+    with open(fn_embedding, 'r', encoding='utf_8_sig') as f:
+        for i, line in enumerate(f):
+            line = line.rstrip()
+            if i == 0:
+                dim_word = int(line.split(' ')[1])
+            else:
+                line = line.split(' ')
+                word = line[0]
+                if word in word2id:
+                    vec = np.asarray(list(map(float, line[1:])))
+                    word2vec[word] = vec
+
+    embs = []
+    for word, idx in sorted(word2id.items(), key=lambda x:x[-1]):
+        if word in word2vec:
+            embs.append(word2vec[word])
+        else:
+            unk = np.random.uniform(-init_range, init_range, dim_word)
+            embs.append(unk)
+    embs = np.asarray(embs)
+    return embs, dim_word
+
 
 def update_dict(key, dictionary):
     if key in dictionary:
@@ -28,24 +57,25 @@ def create_vocabs_from_trainset(trainset, threshold=2,
                                 fn_vocabs=None, oov=OOV, pad=PAD):
     # Creat a word-to-POStags dictionary.
     word2postags = {}
-    with open(fn_dictionary, 'r') as texts:
-        for text in texts:
-            text = utils.utf8rstrip(text)
-            word, postag = text.split('\t')
-            word = utils.normalize(word)
-            # lower setting: 1
-            word = word.lower()
-            if word in word2postags:
-                word2postags[word].append(postag)
-            else:
-                word2postags[word] = [postag]
+    if fn_dictionary is not None:
+        with open(fn_dictionary, 'r', encoding='utf_8_sig') as texts:
+            for text in texts:
+                text = utils.utf8rstrip(text)
+                word, postag = text.split('\t')
+                word = utils.normalize(word)
+                # lower setting: 1
+                word = word.lower()
+                if word in word2postags:
+                    word2postags[word].append(postag)
+                else:
+                    word2postags[word] = [postag]
 
     # Creat a word-to-index dictionary and a index-to-word dictionary.
     dictionary = {oov:0, pad:1}
     for word in word2postags.keys():
         dictionary[word] = len(dictionary)
     id2word = {i:w for w, i in dictionary.items()}
-    
+
     # Creat a unigram-to-index dictionary, a bigram-to-index dictionary.
     # Reconstruct a word-to-index dictionary.
     words   = []
@@ -53,7 +83,7 @@ def create_vocabs_from_trainset(trainset, threshold=2,
     bi2id   = {}
     word2id = {}
     pos2id  = {oov:0}
-    with open(trainset, 'r') as texts:
+    with open(trainset, 'r', encoding='utf_8_sig') as texts:
         for text in texts:
             text = utils.utf8rstrip(text)
             if text == 'EOS':
@@ -61,11 +91,11 @@ def create_vocabs_from_trainset(trainset, threshold=2,
                 unis = utils.get_unigram(sent)
                 for uni in unis:
                     uni2id = update_dict(uni, uni2id)
-           
+
                 bis = utils.get_bigram(sent)
                 for bi in bis:
                     bi2id = update_dict(bi, bi2id)
-         
+
                 words_at_i = utils.get_words_starting_at_i(sent, dictionary)
                 words_at_i += utils.get_words_ending_at_i(sent, dictionary)
                 for words in words_at_i:
@@ -88,10 +118,11 @@ def create_vocabs_from_trainset(trainset, threshold=2,
     uni2id  = cut_by_threshold(uni2id,  oov, pad, threshold)
     bi2id   = cut_by_threshold(bi2id,   oov, pad, threshold)
     word2id = cut_by_threshold(word2id, oov, pad, threshold)
- 
+
     # Creat a POStag-to-index dictionary.
     pos2id = {k:i for i,k in enumerate(pos2id.keys())}
-    word2postags = {k:[pos2id[p] for p in list(set(v))] for k,v in word2postags.items()}
+    word2postags = {k:[pos2id[p] if p in pos2id else pos2id[oov] for p in list(set(v))]\
+                    for k,v in word2postags.items()}
 
     vocabs = [uni2id, bi2id, word2id, pos2id, word2postags]
     if save_vocabs is True:
@@ -107,7 +138,13 @@ class from_file(object):
         self.pos_data = []
         self.filename = filename
         uni2id, bi2id, word2id, pos2id, word2postags = vocabs
-        with open(filename, 'r') as texts:
+
+        if '名詞' in pos2id:
+            self.use_noun_heuristic = True
+        else:
+            self.use_noun_heuristic = False
+
+        with open(filename, 'r', encoding='utf_8_sig') as texts:
             wids  = [] # Word index
             cids  = [] # Character index
             pids  = [] # POStag index
@@ -147,15 +184,16 @@ class from_file(object):
                         w2p = word2postags[word]
                     else:
                         w2p = [0] # OOV
-                    if word.isalnum() is True:
-                        if w2p == [0]:
-                            w2p = [pos2id['名詞']]
-                        else:
-                            w2p.append(pos2id['名詞'])
+                    if self.use_noun_heuristic is True:
+                        if word.isalnum() is True:
+                            if w2p == [0]:
+                                w2p = [pos2id['名詞']]
+                            else:
+                                w2p.append(pos2id['名詞'])
 
                     w2p = list(set(w2p))
                     ptags.append(w2p)
-                
+
                     words.append(word)
                     if word in word2id:
                         wids.append(word2id[word])
