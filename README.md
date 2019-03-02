@@ -1,4 +1,4 @@
-<div align="center"><img alt="nagisa" src="/nagisa/data/nagisa_logo.png" width="75%" height="75%"></div>
+<p align="center"><img width="50%" src="/nagisa/data/nagisa_logo.png" /></p>
 
 ---
 
@@ -71,11 +71,16 @@ print(nagisa.tagger.postags)
 
 Add the user dictionary in easy way.
 ```python
-# If a word is included in the single_word_list, it is recognized as a single word.
-text = "ニューラルネットワークを使ってます。"
-tagger_nn = nagisa.Tagger(single_word_list=['ニューラルネットワーク'])
-print(tagger_nn.tagging(text))
-#=> ニューラルネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号
+# default
+text = "3月に見た「3月のライオン」"
+print(nagisa.tagging(text))
+#=> 3/名詞 月/名詞 に/助詞 見/動詞 た/助動詞 「/補助記号 3/名詞 月/名詞 の/助詞 ライオン/名詞 」/補助記号
+
+
+# If a word ("3月のライオン") is included in the single_word_list, it is recognized as a single word.
+new_tagger = nagisa.Tagger(single_word_list=['3月のライオン'])
+print(new_tagger.tagging(text))
+#=> 3/名詞 月/名詞 に/助詞 見/動詞 た/助動詞 「/補助記号 3月のライオン/名詞 」/補助記号
 ```
 
 
