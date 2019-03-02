@@ -76,7 +76,6 @@ text = "3月に見た「3月のライオン」"
 print(nagisa.tagging(text))
 #=> 3/名詞 月/名詞 に/助詞 見/動詞 た/助動詞 「/補助記号 3/名詞 月/名詞 の/助詞 ライオン/名詞 」/補助記号
 
-
 # If a word ("3月のライオン") is included in the single_word_list, it is recognized as a single word.
 new_tagger = nagisa.Tagger(single_word_list=['3月のライオン'])
 print(new_tagger.tagging(text))

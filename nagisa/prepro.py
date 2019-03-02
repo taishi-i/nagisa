@@ -27,8 +27,8 @@ def embedding_loader(fn_embedding, word2id, init_range=0.1):
 
     embs = []
     for word, idx in sorted(word2id.items(), key=lambda x:x[-1]):
-        if word in word2vec:
-            embs.append(word2vec[word])
+        if word.lower() in word2vec:
+            embs.append(word2vec[word.lower()])
         else:
             unk = np.random.uniform(-init_range, init_range, dim_word)
             embs.append(unk)
@@ -54,7 +54,8 @@ def cut_by_threshold(dictionary, oov, pad, threshold=2):
 
 def create_vocabs_from_trainset(trainset, threshold=2,
                                 fn_dictionary=None, save_vocabs=True,
-                                fn_vocabs=None, oov=OOV, pad=PAD):
+                                fn_vocabs=None, delimiter='\t',
+                                newline='EOS', oov=OOV, pad=PAD):
     # Creat a word-to-POStags dictionary.
     word2postags = {}
     if fn_dictionary is not None:
@@ -86,7 +87,7 @@ def create_vocabs_from_trainset(trainset, threshold=2,
     with open(trainset, 'r', encoding='utf_8_sig') as texts:
         for text in texts:
             text = utils.utf8rstrip(text)
-            if text == 'EOS':
+            if text == newline:
                 sent = ''.join(words)
                 unis = utils.get_unigram(sent)
                 for uni in unis:
@@ -105,7 +106,7 @@ def create_vocabs_from_trainset(trainset, threshold=2,
                 words = []
 
             else:
-                word, pos = text.split('\t')
+                word, pos = text.split(delimiter)
                 word = utils.normalize(word)
                 word = word.replace(' ', '　')
                 # lower setting: 2
@@ -132,7 +133,8 @@ def create_vocabs_from_trainset(trainset, threshold=2,
 
 
 class from_file(object):
-    def __init__(self, filename, window_size, vocabs):
+    def __init__(self, filename, window_size, vocabs,
+                 newline='EOS', delimiter='\t'):
         self.words    = []
         self.ws_data  = []
         self.pos_data = []
@@ -152,7 +154,7 @@ class from_file(object):
             ptags = [] # Original POStags
             for text in texts:
                 text = utils.utf8rstrip(text)
-                if text == 'EOS':
+                if text == newline:
                     sent = ''.join(words)
                     segmented_sent = ' '.join(words)
                     tags = utils.make_tags_as_bmes(segmented_sent)
@@ -174,7 +176,7 @@ class from_file(object):
                     ptags = []
 
                 else:
-                    word, pos = text.split('\t')
+                    word, pos = text.split(delimiter)
                     word = utils.normalize(word)
                     word = word.replace(' ', '　')
                     # lower setting: 3
