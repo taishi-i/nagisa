@@ -37,6 +37,8 @@ def fit(train_file, dev_file, test_file, model_name,
         - model_name (str): Output model filename.
         - dict_file (str, optional): Path to a dictionary file.
         - emb_file (str, optional): Path to a pre-trained embedding file (word2vec format).
+        - delimiter (str, optional): Separate word and tag in each line by 'delimiter'.
+        - newline (str, optional):  Separate lines in the file by 'newline'.
         - layers (int, optional): RNN Layer size.
         - min_count (int, optional): Ignores all words with total frequency lower than this.
         - decay (int, optional): Learning rate decay.
@@ -90,8 +92,7 @@ def fit(train_file, dev_file, test_file, model_name,
                                                 fn_dictionary=hp['DICTIONARY'],
                                                 fn_vocabs=hp['VOCAB'],
                                                 delimiter=delimiter,
-                                                newline=newline
-                                                )
+                                                newline=newline)
 
     if emb_file is not None:
         embs, dim_word = prepro.embedding_loader(fn_embedding=hp['EMBEDDING'],
