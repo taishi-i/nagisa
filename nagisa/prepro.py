@@ -20,7 +20,7 @@ def embedding_loader(fn_embedding, word2id, init_range=0.1):
                 dim_word = int(line.split(' ')[1])
             else:
                 line = line.split(' ')
-                word = line[0]
+                word = line[0].lower()
                 if word in word2id:
                     vec = np.asarray(list(map(float, line[1:])))
                     word2vec[word] = vec
