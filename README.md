@@ -6,6 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/taishi-i/nagisa/badge.svg?branch=master)](https://coveralls.io/github/taishi-i/nagisa?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/nagisa.svg)](https://img.shields.io/pypi/dm/nagisa.svg)
 
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.
@@ -94,7 +95,7 @@ for a joint word segmentation and sequence labeling (e.g, POS-tagging, NER) mode
 The format of the train/dev/test files is tsv.
 Each line is `word`  and `tag` and one line is represented by `word` \t(tab) `tag`.
 Note that you put EOS between sentences.
-Refer to [sample dagtsets](/nagisa/data/sample_datasets).
+Refer to [sample datasets](/nagisa/data/sample_datasets).
 
 
 ```
