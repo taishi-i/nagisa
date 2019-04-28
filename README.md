@@ -9,18 +9,17 @@
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/nagisa.svg)](https://img.shields.io/pypi/dm/nagisa.svg)
 
-
 Nagisa is a python module for Japanese word segmentation/POS-tagging.
 It is designed to be a simple and easy-to-use tool.
 
 This tool has the following features.
-- Based on recurrent neural networks.
-- The word segmentation model uses character- and word-level features [[池田+]](http://www.anlp.jp/proceedings/annual_meeting/2017/pdf_dir/B6-2.pdf).
-- The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
+-  Based on recurrent neural networks.
+-  The word segmentation model uses character- and word-level features [[池田+]](http://www.anlp.jp/proceedings/annual_meeting/2017/pdf_dir/B6-2.pdf).
+-  The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
 For more details refer to the following links.
-- The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
-- The documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
+-  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
+-  The documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
 
 Installation
 =============
@@ -34,7 +33,8 @@ pip install nagisa
 If you use nagisa on Windows, please run it with python 3.5+.
 
 Basic usage
-======
+=============
+
 Sample of word segmentation and POS-tagging for Japanese.
 
 ```python
@@ -56,6 +56,7 @@ print(words.postags)
 
 Post-processing functions
 =====
+
 Filter and extarct words by the specific POS tags.
 ```python
 # Filter the words of the specific POS tags.
@@ -89,9 +90,9 @@ print(new_tagger.tagging(text))
 
 Train a model
 ======
+
 Nagisa (v0.2.0+) provides a simple train method
 for a joint word segmentation and sequence labeling (e.g, POS-tagging, NER) model.
-
 
 The format of the train/dev/test files is tsv.
 Each line is `word`  and `tag` and one line is represented by `word` \t(tab) `tag`.
@@ -132,4 +133,3 @@ words = sample_tagger.tagging(text)
 print(words)
 #> 福岡/PROPN ・/SYM 博多/PROPN の/ADP 観光/NOUN 情報/NOUN
 ```
-
