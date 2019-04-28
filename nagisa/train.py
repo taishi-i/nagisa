@@ -7,9 +7,6 @@ import random
 import logging
 from collections import OrderedDict
 
-import numpy as np
-import dynet as dy
-
 import utils
 import model
 import prepro
