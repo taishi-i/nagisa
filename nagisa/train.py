@@ -13,8 +13,6 @@ import prepro
 import mecab_system_eval
 from tagger import Tagger
 
-
-random.seed(1234)
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
@@ -23,7 +21,7 @@ def fit(train_file, dev_file, test_file, model_name,
         dict_file=None, emb_file=None, delimiter='\t', newline='EOS',
         layers=1, min_count=3, decay=1, epoch=10, window_size=3,
         dim_uni=32, dim_bi=16, dim_word=16, dim_ctype=8, dim_tagemb=16,
-        dim_hidden=100, learning_rate=0.1, dropout_rate=0.3):
+        dim_hidden=100, learning_rate=0.1, dropout_rate=0.3, seed=1234):
 
     """Train a joint word segmentation and sequence labeling (e.g, POS-tagging, NER) model.
 
@@ -48,13 +46,16 @@ def fit(train_file, dev_file, test_file, model_name,
         - dim_tagemb (int, optional): Dimensionality of the tag vectors.
         - dim_hidden (int, optional): Dimensionality of the BiLSTM's hidden layer.
         - learning_rate (float, optional): Learning rate of SGD.
-        - dropout_rate (float, optional): Dropout rate of the input vector for BiLSTMs
+        - dropout_rate (float, optional): Dropout rate of the input vector for BiLSTMs.
+        - seed (int, optional): Random seed.
 
     return:
         - Nothing. After finish training, however,
           save the three model files (*.vocabs, *.params, *.hp) in the current directory.
 
     """
+
+    random.seed(seed)
 
     hp = OrderedDict({
           'LAYERS':layers,
@@ -70,6 +71,7 @@ def fit(train_file, dev_file, test_file, model_name,
           'DIM_HIDDEN':dim_hidden,
           'LEARNING_RATE':learning_rate,
           'DROPOUT_RATE':dropout_rate,
+          'SEED': seed,
 
           'TRAINSET':train_file,
           'TESTSET':test_file,
@@ -167,9 +169,11 @@ def _start(hp, model, train_data, test_data, dev_data):
     for k, v in hp.items():
         logging.info('[nagisa] {}: {}'.format(k, v))
 
-    logs = ['Epoch', 'LR', 'Loss', 'Time', 'DevWS',
-            'DevPOS', 'TestWS', 'TestPOS']
-    logging.info('\t'.join(logs))
+    logs = '{:5}\t{:5}\t{:5}\t{:5}\t{:8}\t{:8}\t{:8}\t{:8}'.format(
+        'Epoch', 'LR', 'Loss', 'Time_m', 'DevWS_f1',
+        'DevPOS_f1', 'TestWS_f1', 'TestPOS_f1')
+    logging.info(logs)
+
 
     utils.dump_data(hp, hp['HYPERPARAMS'])
 
@@ -221,6 +225,11 @@ def _start(hp, model, train_data, test_data, dev_data):
         logs = [e, model.trainer.learning_rate, losses, (time.time()-t)/60,
                 dev_ws_f, dev_pos_f, test_ws_f, test_pos_f]
 
-        log_text = '\t'.join([log[:5] for log in map(str, logs)])
-        logging.info(log_text)
+        logs = [log[:5] for log in map(str, logs)]
+
+        logs = '{:5}\t{:5}\t{:5}\t{:5}\t{:8}\t{:8}\t{:8}\t{:8}'.format(
+            logs[0], logs[1], logs[2], logs[3], logs[4],
+            logs[5], logs[6], logs[7])
+
+        logging.info(logs)
 
