@@ -5,11 +5,14 @@ Tutorial
 Train a Japanese word segmentation and POS tagging model for Universal Dependencies
 ===================================================================================
 
+This tutorial provides an example of training a joint word segmentation and POS tagging model by using Japanese universal dependencies treebank.
+You get to know how to build the original sequence labeling model through this tutorial.
+
 Download the dataset
----------------------------
+--------------------
 
 Before we get started,
-run the command ``$ pip install nagisa`` to install the nagisa library.
+please run the command ``$ pip install nagisa`` to install the nagisa library.
 After installing it, download the Japanese UD treebank from UD_Japanese-GDS_.
 
 .. _UD_Japanese-GDS: https://github.com/UniversalDependencies/UD_Japanese-GSD
@@ -21,24 +24,24 @@ After installing it, download the Japanese UD treebank from UD_Japanese-GDS_.
     pip install nagisa
     git clone https://github.com/UniversalDependencies/UD_Japanese-GSD
 
+Preprocess the dataset and train a model
+----------------------------------------
 
-Preprocess and train a model
------------------------------
-
-First, convert the downloaded files to the input format for nagisa.
-The format of the train/dev/test files is tsv.
-Each line is word and tag and one line is represented by **word \\t tag**.
+First, convert the downloaded data to the input data format for nagisa.
+The input data format of the train/dev/test files is tsv.
+The Each line is word and tag and one line is represented by **word \\t tag**.
 Note that you put **EOS** between sentences.
+Refer to `the tiny sample datasets <https://github.com/taishi-i/nagisa/tree/master/nagisa/data/sample_datasets>`_.
 
-Next,
+Next, you train a joint word segmentation and POS-tagging model by using the ``nagisa.fit()`` function. After finish training the model, save the three model files (ja_gsd_ud.vocabs, ja_gsd_ud.params, ja_gsd_ud.hp) in the current directory.
 
-.. literalinclude:: tutorial_train_ud.py
+.. literalinclude:: examples/tutorial_train_ud.py
     :caption: tutorial_train_ud.py
     :name: tutorial_train_ud.py
     :language: python
-    :emphasize-lines: 51-52
     :linenos:
 
+This is a log of the training process.
 
 .. code-block:: python
 
@@ -87,27 +90,33 @@ Next,
     9    	0.025	2.122	1.475	93.78   	91.63   	94.09   	91.40
     10   	0.012	1.985	1.434	93.55   	91.39   	94.09   	91.40
 
-
-
 Predict
 -------
 
-After finish training,
-save the three model files (ja_gsd_ud.vocabs, ja_gsd_ud.params, ja_gsd_ud.hp) in the current directory.
+You can build the tagger only by loading the three trained model files (ja_gsd_ud.vocabs, ja_gsd_ud.params, ja_gsd_ud.hp) to set arguments in ``nagisa.Tagger()``.
 
-.. literalinclude:: tutorial_predict_ud.py
+.. literalinclude:: examples/tutorial_predict_ud.py
     :caption: tutorial_predict_ud.py
     :name: tutorial_predict_ud.py
     :language: python
     :linenos:
 
-
 Error analysis
 --------------
 
+By checking a confusion matrix,
+you can see what the model is wrong with.
+The code shows how to create a confusion matrix by comparing the predicted tags with the gold-standard tags.
 
-.. literalinclude:: tutorial_error_analysis_ud.py
+.. literalinclude:: examples/tutorial_error_analysis_ud.py
+    :caption: tutorial_error_analysis_ud.py
+    :name: tutorial_error_analysis_ud
+    :language: python
+    :linenos:
 
+This is a confusion matrix if tagger make a mistake in prediction.
+This confusion matrix shows that the tagger often mistakes "NOUN" for "PROPN"
+in this UD_Japanese-GDS dataset.
 
 .. code-block:: python
 

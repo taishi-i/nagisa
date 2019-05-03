@@ -7,8 +7,15 @@ nagisa documentation
 =====================
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.
-It is designed to be *a simple and easy-to-use tool*.
-After installing nagisa by ``$ pip install nagisa``,
+It is designed to be *a simple and easy-to-use tool* for NLP beginners
+and has the following features.
+
+- Based on recurrent neural networks.
+- The word segmentation model uses character- and word-level features.
+- The POS-tagging model uses tag dictionary information.
+
+
+After installing nagisa by the command ``$ pip install nagisa``,
 you can use a Japanese tokenizer and POS tagger in easy way.
 
 
@@ -30,11 +37,7 @@ you can use a Japanese tokenizer and POS tagger in easy way.
     #=> ['名詞', '助詞', '形状詞', '助動詞', '動詞', '名詞', '助動詞']
 
 
-This tool has the following features.
 
-- Based on recurrent neural networks.
-- The word segmentation model uses character- and word-level features.
-- The POS-tagging model uses tag dictionary information.
 
 
 .. toctree::
