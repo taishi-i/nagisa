@@ -2,7 +2,7 @@ import utils
 from nagisa.tagger import Tagger
 from nagisa.train import fit
 
-version = '0.2.1'
+version = '0.2.2'
 # Initialize instance
 tagger  = Tagger()
 # Functions
