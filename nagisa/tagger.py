@@ -174,7 +174,7 @@ class Tagger(object):
         return self._Token(text, words, postags)
 
 
-    def filter(self, text, lower=False, filter_postags=[]):
+    def filter(self, text, lower=False, filter_postags=None):
         """Return the filtered words with POS-tags of the given sentence.
 
         args:
@@ -187,6 +187,9 @@ class Tagger(object):
         return:
             - object : The object of the words with POS-tags.
         """
+        if filter_postags is None:
+            filter_postags = []
+
         words   = []
         postags = []
         tokens  = self.tagging(text, lower)
@@ -197,7 +200,7 @@ class Tagger(object):
         return self._Token(text, words, postags)
 
 
-    def extract(self, text, lower=False, extract_postags=[]):
+    def extract(self, text, lower=False, extract_postags=None):
         """Return the extracted words with POS-tags of the given sentence.
 
         args:
@@ -211,6 +214,9 @@ class Tagger(object):
             - object : The object of the words with POS-tags.
 
         """
+        if extract_postags is None:
+            extract_postags = []
+
         words   = []
         postags = []
         tokens  = self.tagging(text, lower)
