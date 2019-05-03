@@ -33,7 +33,8 @@ def mecab_eval(sys_data, ans_data):
     This script is written by referring to the following code.
     https://github.com/taku910/mecab/blob/master/mecab/src/eval.cpp
     """
-    assert(len(sys_data) == len(ans_data))
+    if not len(sys_data) == len(ans_data):
+        raise AssertionError("len(sys_data) != len(ans_data)")
     num_sents = len(sys_data)
 
     prec = 0

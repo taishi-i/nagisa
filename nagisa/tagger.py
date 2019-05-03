@@ -152,7 +152,8 @@ class Tagger(object):
         return:
             - object : The object of the words with tags.
         """
-        assert type(words) == list, "Please input a list of words."
+        if not type(words) == list:
+            raise AssertionError("Please input a list of words.")
         words = [utils.preprocess(w) for w in words]
         postags = self._postagging(words, lower)
         return postags

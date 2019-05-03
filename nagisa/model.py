@@ -138,7 +138,9 @@ class Model(object):
 
 
     def score_sentence(self, observations, tags):
-        assert len(observations) == len(tags)
+        if not len(observations) == len(tags):
+            raise AssertionError("len(observations) != len(tags)")
+
         score_seq = [0]
         score = dy.scalarInput(0)
         tags = [self.sp_s] + tags
@@ -176,7 +178,8 @@ class Model(object):
             best_path.append(best_tag_id)
         start = best_path.pop()
         best_path.reverse()
-        assert start == self.sp_s
+        if not start == self.sp_s:
+            raise AssertionError("start != self.sp_s")
         return best_path, path_score
 
 
