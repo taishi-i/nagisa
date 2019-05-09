@@ -9,6 +9,7 @@
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/nagisa.svg)](https://img.shields.io/pypi/dm/nagisa.svg)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa?ref=badge_shield)
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.
 It is designed to be a simple and easy-to-use tool.
@@ -134,3 +135,7 @@ words = sample_tagger.tagging(text)
 print(words)
 #> 福岡/PROPN ・/SYM 博多/PROPN の/ADP 観光/NOUN 情報/NOUN
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa?ref=badge_large)
