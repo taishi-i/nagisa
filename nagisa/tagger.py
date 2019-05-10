@@ -53,7 +53,7 @@ class Tagger(object):
 
 
     def wakati(self, text, lower=False):
-        """Return the words of the given sentence.
+        """Word segmentation function. Return the segmented words.
 
         args:
             - text (str): An input sentence.
@@ -169,9 +169,7 @@ class Tagger(object):
         return:
             - object : The object of the words with POS-tags.
         """
-        words = self.wakati(text, lower)
-        postags = self._postagging(words, lower)
-        return self._Token(text, words, postags)
+        return self._Token(text, lower, self.wakati, self._postagging)
 
 
     def filter(self, text, lower=False, filter_postags=None):
@@ -197,7 +195,8 @@ class Tagger(object):
             if not postag in filter_postags:
                 words.append(word)
                 postags.append(postag)
-        return self._Token(text, words, postags)
+        return self._Token(text, lower, self.wakati, self._postagging,
+                           _words=words, _postags=postags)
 
 
     def extract(self, text, lower=False, extract_postags=None):
@@ -224,14 +223,30 @@ class Tagger(object):
             if postag in extract_postags:
                 words.append(word)
                 postags.append(postag)
-        return self._Token(text, words, postags)
+        return self._Token(text, lower, self.wakati, self._postagging,
+                           _words=words, _postags=postags)
 
 
     class _Token(object):
-        def __init__(self, text, words, postags):
+        def __init__(self, text, lower, wakati, postagging, _words=None, _postags=None):
             self.text = text
-            self.words = words
-            self.postags = postags
+            self.__lower = lower
+            self.__words = _words
+            self.__postags = _postags
+            self.__wakati = wakati
+            self.__postagging = postagging
+
+        @property
+        def words(self):
+            if self.__words is None:
+                self.__words = self.__wakati(self.text, self.__lower)
+            return self.__words
+
+        @property
+        def postags(self):
+            if self.__postags is None:
+                self.__postags = self.__postagging(self.words, self.__lower)
+            return self.__postags
 
         def __str__(self):
             return ' '.join([w+'/'+p for w, p in zip(self.words, self.postags)])
