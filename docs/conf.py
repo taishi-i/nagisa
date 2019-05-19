@@ -24,9 +24,9 @@ copyright = '2019, Taishi Ikeda'
 author = 'Taishi Ikeda'
 
 # The short X.Y version
-version = '0.2.1'
+version = '0.2.3'
 # The full version, including alpha/beta/rc tags
-release = '0.2.1'
+release = '0.2.3'
 
 
 # -- General configuration ---------------------------------------------------
