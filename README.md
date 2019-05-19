@@ -99,7 +99,7 @@ for a joint word segmentation and sequence labeling (e.g, POS-tagging, NER) mode
 The format of the train/dev/test files is tsv.
 Each line is `word`  and `tag` and one line is represented by `word` \t(tab) `tag`.
 Note that you put EOS between sentences.
-Refer to [sample datasets](/nagisa/data/sample_datasets) and [Tutorial (Train a model for Universal Dependencies)](https://nagisa.readthedocs.io/en/latest/tutorial.html).
+Refer to [sample datasets](/nagisa/data/sample_datasets) and [tutorial (Train a model for Universal Dependencies)](https://nagisa.readthedocs.io/en/latest/tutorial.html).
 
 
 ```
@@ -137,5 +137,3 @@ print(words)
 ```
 
 
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa?ref=badge_large)
