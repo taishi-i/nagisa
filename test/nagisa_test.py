@@ -36,35 +36,49 @@ class TestNagisa(unittest.TestCase):
         self.assertEqual(output, str(new_tagger.tagging(text)))
 
         # test_6
+        text = "それが、iPhone XSです。"
+        output = "それ/代名詞 が/助詞 、/補助記号 iPhone　XS/名詞 です/助動詞 。/補助記号"
+        new_tagger = nagisa.Tagger(single_word_list=["iPhone[a-zA-Z0-9 ]+"])
+
+        self.assertEqual(output, str(new_tagger.tagging(text)))
+
+        # test_7
+        text = "1234abc ABC"
+        output = "1234/名詞 abc　ABC/名詞"
+        new_tagger = nagisa.Tagger(single_word_list=["[a-zA-Z ]+", "[0-9]+"])
+
+        self.assertEqual(output, str(new_tagger.tagging(text)))
+
+        # test_8
         text   = '(人•ᴗ•♡)こんばんは♪'
         output = '(人•ᴗ•♡)/補助記号 こんばんは/感動詞 ♪/補助記号'
         words  = nagisa.tagging(text)
         self.assertEqual(output, str(words))
 
-        # test_7
+        # test_9
         url    = 'https://github.com/taishi-i/nagisaでコードを公開中(๑¯ω¯๑)'
         output = 'コード/名詞 公開/名詞 中/接尾辞'
         words  = nagisa.filter(url, filter_postags=['URL', '補助記号', '助詞'])
         self.assertEqual(output, str(words))
 
-        # test_8
+        # test_10
         output = 'https://github.com/taishi-i/nagisa/URL で/助詞 を/助詞 (๑　̄ω　̄๑)/補助記号'
         words  = nagisa.extract(url, extract_postags=['URL', '補助記号', '助詞'])
         self.assertEqual(output, str(words))
 
-        # test_9
+        # test_11
         words  = [" (人•ᴗ•♡)","こんばんは","♪"]
         output = ['補助記号', '感動詞', '補助記号']
         postags = nagisa.postagging(words)
         self.assertEqual(output, postags)
 
-        # test_10
+        # test_12
         postags = nagisa.decode(words)
         self.assertEqual(output, postags)
 
 
     def test_fit(self):
-        # test_11
+        # test_13
         nagisa.fit(
             train_file="nagisa/data/sample_datasets/sample.train",
             dev_file="nagisa/data/sample_datasets/sample.dev",
@@ -72,7 +86,7 @@ class TestNagisa(unittest.TestCase):
             model_name="sample",
         )
 
-        # test_12
+        # test_14
         nagisa.fit(
             train_file="nagisa/data/sample_datasets/sample.train",
             dev_file="nagisa/data/sample_datasets/sample.dev",

@@ -80,7 +80,11 @@ class Tagger(object):
                 span = match.span()
                 span_s = span[0]
                 span_e = span[1]
-                tags[span_s:span_e] = [0]+[1]*((span_e-span_s)-2)+[2]
+
+                if (span_e - span_s) == 1:
+                    tags[span_s:span_e] = [3]
+                else:
+                    tags[span_s:span_e] = [0]+[1]*((span_e-span_s)-2)+[2]
 
                 if span_s != 0:
                     previous_tag = tags[span_s-1]
