@@ -5,13 +5,14 @@ from __future__ import division, print_function, absolute_import
 import re
 import sys
 import gzip
+import codecs
 import numpy as np
 import unicodedata
 
 from six.moves import cPickle
 
-reload(sys)                                                             
-if sys.version_info.major == 2:                                         
+reload(sys)
+if sys.version_info.major == 2:
     sys.setdefaultencoding('utf-8')
 
 cdef unicode __OOV = u'oov'
@@ -20,16 +21,16 @@ cdef unicode __PAD = u'pad'
 OOV = __OOV
 PAD = __PAD
 
-_hiragana = re.compile(u'[\u3040-\u309F]')                          
-_katakana = re.compile(u'[\u30A1-\u30FA]')                          
-_kanji    = re.compile(u'[\u4e00-\u9fa5]')                          
-_alpha    = re.compile(u'[a-zA-Z]')                                 
+_hiragana = re.compile(u'[\u3040-\u309F]')
+_katakana = re.compile(u'[\u30A1-\u30FA]')
+_kanji    = re.compile(u'[\u4e00-\u9fa5]')
+_alpha    = re.compile(u'[a-zA-Z]')
 _numeric  = re.compile(u'[0-9]')
 
 
 cpdef unicode utf8rstrip(text):
     if type(text) != unicode:
-        return unicode(text.rstrip(), 'utf-8') 
+        return unicode(text.rstrip(), 'utf-8')
     else:
         return text.rstrip()
 
@@ -38,7 +39,7 @@ cpdef unicode normalize(unicode text):
     return unicodedata.normalize('NFKC', text)
 
 
-cpdef unicode preprocess(text): 
+cpdef unicode preprocess(text):
     text = utf8rstrip(text)
     text = normalize(text)
     text = text.replace(' ', '　')
@@ -55,22 +56,22 @@ cpdef list get_bigram(unicode text):
         int i
         int length_text = len(text)
         unicode end_symbol = u'<E>'
-    return [text[i]+end_symbol if i == length_text-1 else text[i:i+2] 
+    return [text[i]+end_symbol if i == length_text-1 else text[i:i+2]
             for i in range(length_text)]
 
 
-cpdef int get_chartype(unicode character): 
-    if _hiragana.search(character):               
-        return 0                                                            
+cpdef int get_chartype(unicode character):
+    if _hiragana.search(character):
+        return 0
     elif _katakana.search(character):
-        return 1                                                            
+        return 1
     elif _kanji.search(character):
-        return 2                                                            
+        return 2
     elif _alpha.search(unicodedata.normalize('NFKC', character)):
-        return 3                                                            
+        return 3
     elif _numeric.search(unicodedata.normalize('NFKC', character)):
-        return 4                                                            
-    else:                                                                   
+        return 4
+    else:
         return 5
 
 
@@ -128,12 +129,12 @@ cpdef list context_window(list l, int win, int pad_id=1):
     assert (win % 2) == 1
     assert win >=1
     lpadded = int(win/2) * [pad_id] + l + int(win/2) * [pad_id]
-    out = [lpadded[i:i+win] for i in range(length_l)] 
+    out = [lpadded[i:i+win] for i in range(length_l)]
     assert len(out) == len(l)
     return out
 
 
-cpdef list feature_extraction(unicode text, dict uni2id, dict bi2id, 
+cpdef list feature_extraction(unicode text, dict uni2id, dict bi2id,
                               dict dictionary, int window_size):
     # character-level features
     unigrams = get_unigram(text)
@@ -182,7 +183,7 @@ cpdef list make_tags_as_bmes(unicode text):
                     tags += [1]
     assert len(''.join(words)) == len(tags)
     return tags
-    
+
 
 cpdef list segmenter_for_bmes(unicode chars, list tags):
     cdef:
@@ -247,3 +248,35 @@ cpdef list np_viterbi(trans, observations):
     best_path.pop()
     best_path.reverse()
     return best_path
+
+
+cpdef load_file(filename, delimiter='\t', newline='EOS'):
+    cdef:
+        list X, Y, words, tags
+        unicode word, tag
+
+    X = []
+    Y = []
+    words = []
+    tags = []
+
+    with codecs.open(filename, 'r', encoding='utf_8_sig') as f:
+        for line in f:
+            line = utf8rstrip(line)
+
+            if line == newline:
+                if not len(words) == len(tags):
+                    raise AssertionError("len(words) != len(tags)")
+
+                X.append(words)
+                Y.append(tags)
+                words = []
+                tags = []
+            else:
+                line = line.split(delimiter)
+                word = " ".join(line[:-1])
+                tag = line[-1]
+                words.append(word)
+                tags.append(tag)
+
+    return X, Y

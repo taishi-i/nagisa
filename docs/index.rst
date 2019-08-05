@@ -46,4 +46,5 @@ you can use a Japanese tokenizer and POS tagger in easy way.
 
    basic_usage
    tutorial
+   tutorial_ner
    nagisa_api

@@ -41,6 +41,8 @@ class Tagger(object):
         self.pattern = None
         if single_word_list:
             single_word_list = [utils.preprocess(w) for w in single_word_list if len(w) > 1]
+            single_word_list = [w.replace('(', '\(').replace(')', '\)')
+                                for w in single_word_list]
             single_word_list = sorted(single_word_list, key=lambda x:-len(x))
             if len(single_word_list) > 0:
                 self.pattern = re.compile('|'.join(single_word_list))
@@ -80,7 +82,11 @@ class Tagger(object):
                 span = match.span()
                 span_s = span[0]
                 span_e = span[1]
-                tags[span_s:span_e] = [0]+[1]*((span_e-span_s)-2)+[2]
+
+                if (span_e - span_s) == 1:
+                    tags[span_s:span_e] = [3]
+                else:
+                    tags[span_s:span_e] = [0]+[1]*((span_e-span_s)-2)+[2]
 
                 if span_s != 0:
                     previous_tag = tags[span_s-1]
