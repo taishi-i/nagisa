@@ -41,6 +41,8 @@ class Tagger(object):
         self.pattern = None
         if single_word_list:
             single_word_list = [utils.preprocess(w) for w in single_word_list if len(w) > 1]
+            single_word_list = [w.replace('(', '\(').replace(')', '\)')
+                                for w in single_word_list]
             single_word_list = sorted(single_word_list, key=lambda x:-len(x))
             if len(single_word_list) > 0:
                 self.pattern = re.compile('|'.join(single_word_list))

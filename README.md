@@ -1,4 +1,4 @@
-<p align="center"><img width="50%" src="/nagisa/data/nagisa_logo.png" /></p>
+<p align="center"><img width="40%" src="/nagisa/data/nagisa_logo.png" /></p>
 
 ---
 
@@ -8,8 +8,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/taishi-i/nagisa/badge.svg?branch=master)](https://coveralls.io/github/taishi-i/nagisa?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/nagisa.svg)](https://img.shields.io/pypi/dm/nagisa.svg)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftaishi-i%2Fnagisa?ref=badge_shield)
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.
 It is designed to be a simple and easy-to-use tool.
