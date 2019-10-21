@@ -13,3 +13,5 @@ extract = tagger.extract
 postagging = tagger.postagging
 decode = tagger.decode
 fit = fit
+
+__version__ = version
