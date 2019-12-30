@@ -160,7 +160,8 @@ class Tagger(object):
         """
         if not type(words) == list:
             raise AssertionError("Please input a list of words.")
-        words = ["　" if w == " " or w == "　" else utils.preprocess(w) for w in words]
+        words = [utils.preprocess_without_rstrip(w) if w == " " or w == "　"
+                 else utils.preprocess(w) for w in words]
         postags = self._postagging(words, lower)
         return postags
 

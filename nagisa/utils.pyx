@@ -46,6 +46,14 @@ cpdef unicode preprocess(text):
     return text
 
 
+cpdef unicode preprocess_without_rstrip(text):
+    if type(text) != unicode:
+        text = unicode(text, 'utf-8')
+    text = normalize(text)
+    text = text.replace(' ', '　')
+    return text
+
+
 cpdef list get_unigram(unicode text):
     cdef unicode uni
     return [uni for uni in text]
