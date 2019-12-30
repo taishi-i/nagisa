@@ -178,7 +178,7 @@ def _start(hp, model, train_data, test_data, dev_data):
     utils.dump_data(hp, hp['HYPERPARAMS'])
 
     decay_counter  = 0
-    best_dev_score = 0.
+    best_dev_score = -1.0
     indice = [i for i in range(len(train_data.ws_data))]
     for e in range(1, hp['EPOCH']+1):
         t = time.time()
