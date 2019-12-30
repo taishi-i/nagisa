@@ -76,9 +76,31 @@ class TestNagisa(unittest.TestCase):
         postags = nagisa.decode(words)
         self.assertEqual(output, postags)
 
+        # test_13
+        words  = [" (人•ᴗ•♡)", "　", "こんばんは","♪"]
+        output = ['補助記号', "空白", '感動詞', '補助記号']
+        postags = nagisa.postagging(words)
+
+        self.assertEqual(output, postags)
+
+        # test_14
+        postags = nagisa.decode(words)
+        self.assertEqual(output, postags)
+
+        # test_15
+        words  = [" (人•ᴗ•♡)", " ", "こんばんは","♪"]
+        output = ['補助記号', "空白", '感動詞', '補助記号']
+        postags = nagisa.postagging(words)
+
+        self.assertEqual(output, postags)
+
+        # test_16
+        postags = nagisa.decode(words)
+        self.assertEqual(output, postags)
+
 
     def test_fit(self):
-        # test_13
+        # test_17
         nagisa.fit(
             train_file="nagisa/data/sample_datasets/sample.train",
             dev_file="nagisa/data/sample_datasets/sample.dev",
@@ -86,7 +108,7 @@ class TestNagisa(unittest.TestCase):
             model_name="sample",
         )
 
-        # test_14
+        # test_18
         nagisa.fit(
             train_file="nagisa/data/sample_datasets/sample.train",
             dev_file="nagisa/data/sample_datasets/sample.dev",
