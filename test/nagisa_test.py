@@ -123,14 +123,17 @@ class TestNagisa(unittest.TestCase):
 
     def test_mecab_system_eval(self):
         # test_19
-        system_file = "nagisa/data/sample_datasets/sample.train"
-        answer_file = "nagisa/data/sample_datasets/sample.train"
+        system_file = "nagisa/data/sample_datasets/sample.pred"
+        answer_file = "nagisa/data/sample_datasets/sample.test"
 
         system_data = nagisa.train.mecab_system_eval.readFile(system_file)
         answer_data = nagisa.train.mecab_system_eval.readFile(answer_file)
 
+        expected_r = [20, 20, 26, 23]
         r = nagisa.train.mecab_system_eval.mecab_eval(system_data, answer_data)
+
         nagisa.train.mecab_system_eval.print_eval(r)
+        self.assertEqual(r, expected_r)
 
 
 def suite():
