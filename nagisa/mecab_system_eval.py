@@ -3,6 +3,8 @@
 from __future__ import division, print_function, absolute_import
 
 import sys
+import codecs
+
 if sys.version_info.major == 3:
     PY_3 = True
 else:
@@ -12,7 +14,7 @@ else:
 def readFile(filename):
     sent = []
     data = []
-    with open(filename, "r") as f:
+    with codecs.open(filename, 'r', encoding='utf_8_sig') as f:
         for line in f:
             line = line.rstrip()
             if line == "EOS":
