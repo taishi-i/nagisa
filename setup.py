@@ -72,6 +72,7 @@ setup(
     author_email = 'taishi.ikeda.0323@gmail.com',
     version = '0.2.6',
     description = 'A Japanese tokenizer based on recurrent neural networks',
+    long_description_content_type = "text/markdown",
     long_description = long_description,
     url = 'https://github.com/taishi-i/nagisa',
     download_url = 'https://github.com/taishi-i/nagisa/archive/0.2.6.tar.gz',
