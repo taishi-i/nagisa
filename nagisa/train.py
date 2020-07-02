@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def fit(train_file, dev_file, test_file, model_name,
         dict_file=None, emb_file=None, delimiter='\t', newline='EOS',
-        layers=1, min_count=3, decay=1, epoch=10, window_size=3,
+        layers=1, min_count=2, decay=1, epoch=10, window_size=3,
         dim_uni=32, dim_bi=16, dim_word=16, dim_ctype=8, dim_tagemb=16,
         dim_hidden=100, learning_rate=0.1, dropout_rate=0.3, seed=1234):
 
@@ -88,6 +88,7 @@ def fit(train_file, dev_file, test_file, model_name,
 
     # Preprocess
     vocabs = prepro.create_vocabs_from_trainset(trainset=hp['TRAINSET'],
+                                                threshold=hp['THRESHOLD'],
                                                 fn_dictionary=hp['DICTIONARY'],
                                                 fn_vocabs=hp['VOCAB'],
                                                 delimiter=delimiter,
