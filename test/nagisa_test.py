@@ -88,7 +88,7 @@ class TestNagisa(unittest.TestCase):
         self.assertEqual(output, postags)
 
         # test_15
-        words  = [" (人•ᴗ•♡)", " ", "こんばんは","♪"]
+        words = [" (人•ᴗ•♡)", " ", "こんばんは","♪"]
         output = ['補助記号', "空白", '感動詞', '補助記号']
         postags = nagisa.postagging(words)
 
@@ -98,9 +98,41 @@ class TestNagisa(unittest.TestCase):
         postags = nagisa.decode(words)
         self.assertEqual(output, postags)
 
+        # test_17
+        text = "こんばんは😀"
+        output = "こんばんは/感動詞 😀/補助記号"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
+        # test_18
+        text = "ｺﾝﾊﾞﾝﾊ１２３４５"
+        output = "コンバンハ/名詞 1/名詞 2/名詞 3/名詞 4/名詞 5/名詞"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
+        # test_19
+        text = "𪗱𪘂𪘚𪚲"
+        output = "𪗱/補助記号 𪘂/補助記号 𪘚/補助記号 𪚲/補助記号"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
+    def test_utils(self):
+        # test_20
+        output = "oov"
+        self.assertEqual(output, nagisa.utils.OOV)
+
+        # test_21
+        output = "pad"
+        self.assertEqual(output, nagisa.utils.PAD)
+
+        # test_22
+        text = "Python"
+        output = ['P', 'y', 't', 'h', 'o', 'n']
+        unigrams = nagisa.utils.get_unigram(text)
+        self.assertEqual(output, unigrams)
 
     def test_fit(self):
-        # test_17
+        # test_22
         nagisa.fit(
             train_file="nagisa/data/sample_datasets/sample.train",
             dev_file="nagisa/data/sample_datasets/sample.dev",
@@ -108,7 +140,7 @@ class TestNagisa(unittest.TestCase):
             model_name="sample",
         )
 
-        # test_18
+        # test_23
         nagisa.fit(
             train_file="nagisa/data/sample_datasets/sample.train",
             dev_file="nagisa/data/sample_datasets/sample.dev",
@@ -120,9 +152,21 @@ class TestNagisa(unittest.TestCase):
             delimiter="\t"
         )
 
+        # test_24
+        nagisa.fit(
+            train_file="nagisa/data/sample_datasets/sample.train",
+            dev_file="nagisa/data/sample_datasets/sample.dev",
+            test_file="nagisa/data/sample_datasets/sample.test",
+            dict_file="nagisa/data/sample_datasets/sample.dict",
+            emb_file="nagisa/data/sample_datasets/sample.emb",
+            model_name="sample",
+            newline="EOS",
+            delimiter="\t",
+            min_count=0
+        )
 
     def test_mecab_system_eval(self):
-        # test_19
+        # test_25
         system_file = "nagisa/data/sample_datasets/sample.pred"
         answer_file = "nagisa/data/sample_datasets/sample.test"
 
