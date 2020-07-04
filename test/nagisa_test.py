@@ -126,9 +126,12 @@ class TestNagisa(unittest.TestCase):
         self.assertEqual(output, nagisa.utils.PAD)
 
         # test_22
-        text = "Python"
-        output = ['P', 'y', 't', 'h', 'o', 'n']
+        text = "Ｐｙｔｈｏｎ"
+        text = nagisa.utils.preprocess(text)
+        text = text.lower()
+        output = ['p', 'y', 't', 'h', 'o', 'n']
         unigrams = nagisa.utils.get_unigram(text)
+
         self.assertEqual(output, unigrams)
 
     def test_fit(self):
