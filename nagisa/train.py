@@ -7,10 +7,12 @@ import random
 import logging
 from collections import OrderedDict
 
-import utils
+
 import model
 import prepro
 import mecab_system_eval
+import nagisa_utils as utils
+
 from tagger import Tagger
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')

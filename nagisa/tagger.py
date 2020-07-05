@@ -5,7 +5,8 @@ from __future__ import division, print_function, absolute_import
 import os
 import re
 import sys
-import utils
+
+import nagisa_utils as utils
 import nagisa.model as model
 
 base = os.path.dirname(os.path.abspath(__file__))

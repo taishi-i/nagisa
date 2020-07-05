@@ -60,8 +60,8 @@ class defer_cythonize(list):
 def extensions():
     from Cython.Build import cythonize
     import numpy
-    extensions = [Extension('utils',
-                  ['nagisa/utils.pyx'],
+    extensions = [Extension('nagisa_utils',
+                  ['nagisa/nagisa_utils.pyx'],
                   include_dirs = [numpy.get_include()])]
     return cythonize(extensions)
 

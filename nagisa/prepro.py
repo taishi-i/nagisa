@@ -6,7 +6,7 @@ import codecs
 
 import numpy as np
 
-import utils
+import nagisa_utils as utils
 
 OOV = utils.OOV
 PAD = utils.PAD

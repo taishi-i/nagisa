@@ -1,4 +1,5 @@
-import utils
+import nagisa_utils as utils
+
 from nagisa.tagger import Tagger
 from nagisa.train import fit
 
