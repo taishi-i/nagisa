@@ -57,31 +57,33 @@ class defer_cythonize(list):
     def __len__(self):
         return len(self.c_list())
 
+
 def extensions():
     from Cython.Build import cythonize
     import numpy
     extensions = [Extension('nagisa_utils',
                   ['nagisa/nagisa_utils.pyx'],
-                  include_dirs = [numpy.get_include()])]
+                  include_dirs=[numpy.get_include()])]
     return cythonize(extensions)
 
+
 setup(
-    name = 'nagisa',
+    name='nagisa',
     packages=['nagisa'],
-    author = 'Taishi Ikeda',
-    author_email = 'taishi.ikeda.0323@gmail.com',
-    version = '0.2.6',
-    description = 'A Japanese tokenizer based on recurrent neural networks',
-    long_description_content_type = "text/markdown",
-    long_description = long_description,
-    url = 'https://github.com/taishi-i/nagisa',
-    download_url = 'https://github.com/taishi-i/nagisa/archive/0.2.6.tar.gz',
-    license = 'MIT License',
-    platforms = 'Unix',
-    setup_requires=['six', 'cython', 'numpy',],
-    install_requires = ['six', 'numpy','DyNet'],
-    classifiers = classifiers,
-    include_package_data = True,
-    test_suite = 'test.nagisa_test.suite',
-    ext_modules = defer_cythonize(extensions)
+    author='Taishi Ikeda',
+    author_email='taishi.ikeda.0323@gmail.com',
+    version='0.2.7',
+    description='A Japanese tokenizer based on recurrent neural networks',
+    long_description_content_type="text/markdown",
+    long_description=long_description,
+    url='https://github.com/taishi-i/nagisa',
+    download_url='https://github.com/taishi-i/nagisa/archive/0.2.7.tar.gz',
+    license='MIT License',
+    platforms='Unix',
+    setup_requires=['six', 'cython', 'numpy'],
+    install_requires=['six', 'numpy', 'DyNet'],
+    classifiers=classifiers,
+    include_package_data=True,
+    test_suite='test.nagisa_test.suite',
+    ext_modules=defer_cythonize(extensions)
 )
