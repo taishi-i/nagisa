@@ -2,8 +2,7 @@
 
 ---
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/769dd003c7184d4d81dad74fd8a322a1)](https://app.codacy.com/app/taishi-i/nagisa?utm_source=github.com&utm_medium=referral&utm_content=taishi-i/nagisa&utm_campaign=Badge_Grade_Dashboard)
-[![Build Status](https://travis-ci.com/taishi-i/nagisa.svg?branch=master)](https://travis-ci.org/taishi-i/nagisa)
+[![Build Status](https://travis-ci.com/taishi-i/nagisa.svg?branch=master)](https://travis-ci.com/taishi-i/nagisa)
 [![Build status](https://ci.appveyor.com/api/projects/status/6k35hmxl1juf1hqf?svg=true)](https://ci.appveyor.com/project/taishi-i/nagisa)
 [![Coverage Status](https://coveralls.io/repos/github/taishi-i/nagisa/badge.svg?branch=master)](https://coveralls.io/github/taishi-i/nagisa?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
