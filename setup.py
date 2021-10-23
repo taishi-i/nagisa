@@ -30,6 +30,8 @@ classifiers = [
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Operating System :: Unix',
     'Operating System :: MacOS :: MacOS X',
     'Operating System :: Microsoft :: Windows',
@@ -67,6 +69,15 @@ def extensions():
     return cythonize(extensions)
 
 
+def switch_install_requires():
+    major = sys.version_info.major
+    minor = sys.version_info.minor
+    if os.name == 'posix' and major == 3 and minor == 9:
+        return ['six', 'numpy', 'DyNet38']
+    else:
+        return ['six', 'numpy', 'DyNet']
+
+
 setup(
     name='nagisa',
     packages=['nagisa'],
@@ -81,7 +92,7 @@ setup(
     license='MIT License',
     platforms='Unix',
     setup_requires=['six', 'cython', 'numpy'],
-    install_requires=['six', 'numpy', 'DyNet'],
+    install_requires=switch_install_requires(),
     classifiers=classifiers,
     include_package_data=True,
     test_suite='test.nagisa_test.suite',
