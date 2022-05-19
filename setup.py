@@ -32,6 +32,7 @@ classifiers = [
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
     'Operating System :: Unix',
     'Operating System :: MacOS :: MacOS X',
     'Operating System :: Microsoft :: Windows',
@@ -72,7 +73,7 @@ def extensions():
 def switch_install_requires():
     major = sys.version_info.major
     minor = sys.version_info.minor
-    if os.name == 'posix' and major == 3 and minor == 9:
+    if os.name == 'posix' and major == 3 and minor == 10:
         return ['six', 'numpy', 'DyNet38']
     else:
         return ['six', 'numpy', 'DyNet']
