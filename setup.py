@@ -73,7 +73,7 @@ def extensions():
 def switch_install_requires():
     major = sys.version_info.major
     minor = sys.version_info.minor
-    if os.name == 'posix' and major == 3 and minor == 10:
+    if os.name == 'posix' and major == 3 and minor > 7:
         return ['six', 'numpy', 'DyNet38']
     else:
         return ['six', 'numpy', 'DyNet']
