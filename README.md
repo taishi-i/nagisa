@@ -20,14 +20,16 @@ This tool has the following features.
 -  The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
 For more details refer to the following links.
--  The slides at PyCon JP 2019 is available [here](https://speakerdeck.com/taishii/pycon-jp-2019).
+-  The presentation slide at PyCon JP (2019) is available [here](https://speakerdeck.com/taishii/pycon-jp-2019).
 -  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
 -  The documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
+-  The presentation slide at NLP Hacks (2022) is available [here](https://speakerdeck.com/taishii/nlphacks).
+
 
 Installation
 =============
 
-Python 2.7.x or 3.5+ is required.
+Python 3.6+ (3.6, 3.7, 3.8, 3.9, 3.10) on Linux or macOS is required.
 This tool uses [DyNet](https://github.com/clab/dynet) (the Dynamic Neural Network Toolkit) to calcucate neural networks.
 You can install nagisa by using the following command.
 ```bash
