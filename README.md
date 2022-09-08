@@ -35,7 +35,7 @@ You can install nagisa by using the following command.
 ```bash
 pip install nagisa
 ```
-For Windows users, please run it with python 3.6 or 3.7 (64bit).
+For Windows users, please run it with python 3.6, 3.7 or 3.8 (64bit).
 
 Basic usage
 =============
