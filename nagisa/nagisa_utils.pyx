@@ -42,6 +42,7 @@ cpdef unicode normalize(unicode text):
 cpdef unicode preprocess(text):
     text = utf8rstrip(text)
     text = normalize(text)
+    text = text.replace('İ', 'I')
     text = text.replace(' ', '　')
     return text
 
@@ -50,6 +51,7 @@ cpdef unicode preprocess_without_rstrip(text):
     if type(text) != unicode:
         text = unicode(text, 'utf-8')
     text = normalize(text)
+    text = text.replace('İ', 'I')
     text = text.replace(' ', '　')
     return text
 

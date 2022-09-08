@@ -18,7 +18,6 @@ class TestNagisa(unittest.TestCase):
         words = nagisa.tagging(text, lower=True)
         self.assertEqual(output, str(words))
 
-
         # test_3
         text   = 'ニューラルネットワークを使ってます。'
         output = 'ニューラル/名詞 ネットワーク/名詞 を/助詞 使っ/動詞 て/助動詞 ます/助動詞 。/補助記号'
@@ -115,6 +114,13 @@ class TestNagisa(unittest.TestCase):
         output = "𪗱/補助記号 𪘂/補助記号 𪘚/補助記号 𪚲/補助記号"
         words = nagisa.tagging(text)
         self.assertEqual(output, str(words))
+
+        # test_26
+        text = "エラーを避けるため、İはIに変換される"
+        output = "エラー/名詞 を/助詞 避ける/動詞 ため/名詞 、/補助記号 I/名詞 は/助詞 I/名詞 に/助詞 変換/名詞 さ/動詞 れる/助動詞"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
 
     def test_utils(self):
         # test_20
