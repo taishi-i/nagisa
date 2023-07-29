@@ -116,20 +116,17 @@ class Tagger(object):
 
         wids = utils.conv_tokens_to_ids(words, self._word2id)
         cids = [utils.conv_tokens_to_ids([c for c in w], self._uni2id) for w in words]
+
+        # Improve the bottleneck in part-of-speech tagging.
+        # No changes made to output results by this change.
         tids = []
         for w in words:
-            if w in self._word2postags:
-                w2p = self._word2postags[w]
-            else:
-                w2p = [0]
-            if self.use_noun_heuristic is True:
-                if w.isalnum() is True:
-                    if w2p == [0]:
-                        w2p = [self._pos2id[u'名詞']]
-                    else:
-                        w2p.append(self._pos2id[u'名詞'])
-            w2p = list(set(w2p))
-            tids.append(w2p)
+            w2p = set(self._word2postags.get(w, [0]))
+            if self.use_noun_heuristic and w.isalnum():
+                if 0 in w2p:
+                    w2p.remove(0)
+                w2p.add(2)  # nagisa.tagger._pos2id["名詞"] = 2
+            tids.append(list(w2p))
 
         X = [cids, wids, tids]
         postags = [self._id2pos[pid] for pid in self._model.POStagging(X)]
