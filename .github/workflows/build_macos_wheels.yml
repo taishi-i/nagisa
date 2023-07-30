@@ -24,6 +24,7 @@ jobs:
         # to supply options, put them in 'env', like:
         env:
           CIBW_SKIP: "pp*"
+          CIBW_ENVIRONMENT: "PIP_USE_PEP517=1"
 
       - uses: actions/upload-artifact@v3
         with:
