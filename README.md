@@ -22,6 +22,7 @@ This tool has the following features.
 For more details refer to the following links.
 -  A BERT model for nagisa is available [here](https://github.com/taishi-i/nagisa_bert).
 -  The presentation slide at PyCon JP (2019) is available [here](https://speakerdeck.com/taishii/pycon-jp-2019).
+-  The presentation slide at PyCon JP (2022) is available [here](https://speakerdeck.com/taishii/pycon-jp-2022).
 -  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
 -  The documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
 
