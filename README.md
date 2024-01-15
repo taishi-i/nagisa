@@ -21,7 +21,7 @@ This tool has the following features.
 
 For more details refer to the following links.
 -  A BERT model for nagisa is available [here](https://github.com/taishi-i/nagisa_bert).
--  The presentation slide at PyCon JP (2019) is available [here](https://speakerdeck.com/taishii/pycon-jp-2019).
+-  The stop words for nagisa are available [here](https://huggingface.co/datasets/taishi-i/nagisa_stopwords).
 -  The presentation slide at PyCon JP (2022) is available [here](https://speakerdeck.com/taishii/pycon-jp-2022).
 -  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
 -  The documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
@@ -37,6 +37,7 @@ You can install nagisa by using the following command.
 pip install nagisa
 ```
 For Windows users, please run it with python 3.6, 3.7 or 3.8 (64bit).
+It is also compatible with the Windows Subsystem for Linux (WSL).
 
 Basic usage
 =============
