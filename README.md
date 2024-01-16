@@ -20,7 +20,6 @@ This tool has the following features.
 -  The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
 For more details refer to the following links.
--  A BERT model for nagisa is available [here](https://github.com/taishi-i/nagisa_bert).
 -  The stop words for nagisa are available [here](https://huggingface.co/datasets/taishi-i/nagisa_stopwords).
 -  The presentation slide at PyCon JP (2022) is available [here](https://speakerdeck.com/taishii/pycon-jp-2022).
 -  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
