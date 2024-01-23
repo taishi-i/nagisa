@@ -3,7 +3,6 @@
 ---
 
 [![Python package](https://github.com/taishi-i/nagisa/actions/workflows/python-package.yml/badge.svg)](https://github.com/taishi-i/nagisa/actions/workflows/python-package.yml)
-[![Build Status](https://app.travis-ci.com/taishi-i/nagisa.svg?branch=master)](https://app.travis-ci.com/taishi-i/nagisa)
 [![Build status](https://ci.appveyor.com/api/projects/status/6k35hmxl1juf1hqf?svg=true)](https://ci.appveyor.com/project/taishi-i/nagisa)
 [![Coverage Status](https://coveralls.io/repos/github/taishi-i/nagisa/badge.svg?branch=master)](https://coveralls.io/github/taishi-i/nagisa?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
