@@ -125,7 +125,7 @@ class Tagger(object):
             if self.use_noun_heuristic and w.isalnum():
                 if 0 in w2p:
                     w2p.remove(0)
-                w2p.add(2)  # nagisa.tagger._pos2id["名詞"] = 2
+                w2p.add(self._pos2id[u'名詞'])
             tids.append(list(w2p))
 
         X = [cids, wids, tids]
