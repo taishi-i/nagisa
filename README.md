@@ -29,10 +29,8 @@ For more details refer to the following links.
 Installation
 =============
 
-Python 3.6 through 3.12 on Linux,
-or Python 3.6 through 3.11 on macOS Intel is required.
-This tool uses [DyNet](https://github.com/clab/dynet) (the Dynamic Neural Network Toolkit) to calcucate neural networks.
-You can install nagisa by using the following command.
+To use nagisa, you need to have Python versions 3.6 through 3.12 on Linux, or Python versions 3.9 through 3.12 on macOS (Intel or M1/M2). You can install nagisa with the following command.
+
 ```bash
 pip install nagisa
 ```
