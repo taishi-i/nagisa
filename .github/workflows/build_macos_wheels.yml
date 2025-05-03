@@ -11,10 +11,10 @@ jobs:
         os: [macos-11]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Used to host cibuildwheel
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
 
       - name: Install cibuildwheel
         run: python -m pip install cibuildwheel==2.14.1
@@ -26,7 +26,7 @@ jobs:
           CIBW_SKIP: "pp*"
           CIBW_ENVIRONMENT: "PIP_USE_PEP517=1"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./wheelhouse/*.whl
 
