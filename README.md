@@ -12,6 +12,7 @@
 
 
 Nagisa is a python module for Japanese word segmentation/POS-tagging.
+
 It is designed to be a simple and easy-to-use tool.
 
 This tool has the following features.
@@ -29,7 +30,7 @@ For more details refer to the following links.
 Installation
 =============
 
-You can install `nagisa` using pip:
+You can install nagisa using pip:
 
 ```bash
 pip install nagisa
@@ -39,7 +40,7 @@ Supported Platforms
 - Linux: Python 3.6 - 3.13
 - macOS (Intel, M1, M2): Python 3.9 - 3.13
 - Windows: Python 3.6 - 3.8 (64-bit)
-    - Windows users are encouraged to use the Windows Subsystem for Linux (WSL).
+    - Windows users are encouraged to use WSL.
 
 Basic usage
 =============
@@ -68,6 +69,8 @@ Post-processing functions
 
 Filter and extarct words by the specific POS tags.
 ```python
+import nagisa
+
 # Filter the words of the specific POS tags.
 words = nagisa.filter(text, filter_postags=['助詞', '助動詞'])
 print(words)
@@ -85,6 +88,8 @@ print(nagisa.tagger.postags)
 
 Add the user dictionary in easy way.
 ```python
+import nagisa
+
 # default
 text = "3月に見た「3月のライオン」"
 print(nagisa.tagging(text))
@@ -131,6 +136,8 @@ EOS
 ```
 
 ```python
+import nagisa
+
 # After finish training, save the three model files (*.vocabs, *.params, *.hp).
 nagisa.fit(train_file="sample.train", dev_file="sample.dev", test_file="sample.test", model_name="sample")
 
@@ -142,5 +149,3 @@ words = sample_tagger.tagging(text)
 print(words)
 #> 福岡/PROPN ・/SYM 博多/PROPN の/ADP 観光/NOUN 情報/NOUN
 ```
-
-
