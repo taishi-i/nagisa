@@ -29,13 +29,17 @@ For more details refer to the following links.
 Installation
 =============
 
-To use nagisa, you need to have Python versions 3.6 through 3.12 on Linux, or Python versions 3.9 through 3.12 on macOS (Intel or M1/M2). You can install nagisa with the following command.
+You can install `nagisa` using pip:
 
 ```bash
 pip install nagisa
-```
-For Windows users, please run it with python 3.6, 3.7 or 3.8 (64bit).
-It is also compatible with the Windows Subsystem for Linux (WSL).
+````
+
+Supported Platforms
+- Linux: Python 3.6 - 3.13
+- macOS (Intel, M1, M2): Python 3.9 - 3.13
+- Windows: Python 3.6 - 3.8 (64-bit)
+    - Windows users are encouraged to use the Windows Subsystem for Linux (WSL).
 
 Basic usage
 =============
@@ -96,7 +100,7 @@ print(new_tagger.tagging(text))
 Train a model
 ======
 
-Nagisa (v0.2.0+) provides a simple train method
+Nagisa provides a simple train method
 for a joint word segmentation and sequence labeling (e.g, POS-tagging, NER) model.
 
 The format of the train/dev/test files is tsv.
