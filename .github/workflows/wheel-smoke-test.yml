@@ -1,0 +1,45 @@
+name: Wheel smoke test (PyPI)
+
+on:
+  schedule:
+    - cron: "3 0 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  smoke:
+    name: Import & basic run on ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Show environment
+        run: |
+          python -V
+          pip -V
+
+      - name: Install from PyPI (wheel-only)
+        run: |
+          python -m pip install -U pip
+          pip install --upgrade --only-binary=:all: nagisa
+
+      - name: Smoke test (import & minimal call)
+        shell: bash
+        run: |
+          python - << 'PY'
+          import nagisa
+          text = 'Pythonで簡単に使えるツールです'
+          tokens = nagisa.tagging(text)
+          print(tokens)
+          PY
