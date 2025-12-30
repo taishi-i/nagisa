@@ -3,7 +3,6 @@
 ---
 
 [![Python package](https://github.com/taishi-i/nagisa/actions/workflows/python-package.yml/badge.svg)](https://github.com/taishi-i/nagisa/actions/workflows/python-package.yml)
-[![Build status](https://ci.appveyor.com/api/projects/status/6k35hmxl1juf1hqf?svg=true)](https://ci.appveyor.com/project/taishi-i/nagisa)
 [![Coverage Status](https://coveralls.io/repos/github/taishi-i/nagisa/badge.svg?branch=master)](https://coveralls.io/github/taishi-i/nagisa?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
@@ -21,10 +20,9 @@ This tool has the following features.
 -  The POS-tagging model uses tag dictionary information [[Inoue+]](http://www.aclweb.org/anthology/K17-1042).
 
 For more details refer to the following links.
--  The stop words for nagisa are available [here](https://huggingface.co/datasets/taishi-i/nagisa_stopwords).
--  The presentation slide at PyCon JP (2022) is available [here](https://speakerdeck.com/taishii/pycon-jp-2022).
--  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
 -  The documentation is available [here](https://nagisa.readthedocs.io/en/latest/?badge=latest).
+-  The article in Japanese is available [here](https://qiita.com/taishi-i/items/5b9275a606b392f7f58e).
+-  The presentation slide at PyCon JP (2022) is available [here](https://speakerdeck.com/taishii/pycon-jp-2022).
 
 
 Installation
@@ -37,10 +35,9 @@ pip install nagisa
 ````
 
 Supported Platforms
-- Linux: Python 3.6 - 3.13
-- macOS (Intel, M1, M2): Python 3.9 - 3.13
-- Windows: Python 3.6 - 3.8 (64-bit)
-    - Windows users are encouraged to use WSL.
+- Linux: Python 3.6 - 3.14
+- macOS: Python 3.9 - 3.14
+- Windows: Python 3.9 - 3.14
 
 Basic usage
 =============
