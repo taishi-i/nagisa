@@ -5,8 +5,9 @@
 [![Python package](https://github.com/taishi-i/nagisa/actions/workflows/python-package.yml/badge.svg)](https://github.com/taishi-i/nagisa/actions/workflows/python-package.yml)
 [![Coverage Status](https://coveralls.io/repos/github/taishi-i/nagisa/badge.svg?branch=master)](https://coveralls.io/github/taishi-i/nagisa?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/nagisa/badge/?version=latest)](https://nagisa.readthedocs.io/en/latest/?badge=latest)
+![GitHub License](https://img.shields.io/github/license/taishi-i/nagisa)
 [![PyPI](https://img.shields.io/pypi/v/nagisa.svg)](https://pypi.python.org/pypi/nagisa)
- [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/taishi-i/nagisa-demo)
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/taishi-i/nagisa-demo)
 [![Downloads](https://static.pepy.tech/badge/nagisa)](https://pepy.tech/project/nagisa)
 
 
@@ -34,10 +35,10 @@ You can install nagisa using pip:
 pip install nagisa
 ````
 
-Supported Platforms
-- Linux: Python 3.6 - 3.14
-- macOS: Python 3.9 - 3.14
-- Windows: Python 3.9 - 3.14
+Supported Platforms:
+- 🐧 Linux: Python 3.6 - 3.14
+- 🍎 macOS: Python 3.9 - 3.14
+- 🪟 Windows: Python 3.9 - 3.14
 
 Basic usage
 =============
