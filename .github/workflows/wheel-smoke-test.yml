@@ -39,7 +39,4 @@ jobs:
         run: |
           python - << 'PY'
           import nagisa
-          text = 'Pythonで簡単に使えるツールです'
-          tokens = nagisa.tagging(text)
-          print(tokens)
           PY
