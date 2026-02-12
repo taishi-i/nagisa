@@ -205,6 +205,9 @@ cpdef list segmenter_for_bmes(unicode chars, list tags):
     assert len(chars) == len(tags)
     for character, tag in zip(chars, tags):
         if tag == 3:
+            if partical_word is not u'':
+                words.append(partical_word)
+                partical_word = u''
             words.append(character)
         elif tag == 2:
             partical_word += character
@@ -212,6 +215,8 @@ cpdef list segmenter_for_bmes(unicode chars, list tags):
             partical_word = u''
         else:
             partical_word += character
+    if partical_word is not u'':
+        words.append(partical_word)
     return words
 
 
