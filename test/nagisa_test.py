@@ -121,6 +121,29 @@ class TestNagisa(unittest.TestCase):
         words = nagisa.tagging(text)
         self.assertEqual(output, str(words))
 
+        # test_27
+        text = "いい写真やちゃ"
+        output = "いい/形容詞 写真/名詞 や/助動詞 ちゃ/助詞"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
+        # test_28
+        text = "http://www."
+        output = "http://www./URL"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
+        # test_29
+        text = "ちなみに公式ホームページ(http://www."
+        output = "ちなみ/名詞 に/助詞 公式/名詞 ホーム/名詞 ページ/名詞 (/補助記号 http://www./URL"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
+
+        # test_30
+        text = "互いにライフを1000ポイント払わないと通常召喚できない。"
+        output = "互い/名詞 に/助詞 ライフ/名詞 を/助詞 100/名詞 0/名詞 ポイント/名詞 払わ/動詞 ない/助動詞 と/助詞 通常/名詞 召喚/名詞 でき/動詞 ない/助動詞 。/補助記号"
+        words = nagisa.tagging(text)
+        self.assertEqual(output, str(words))
 
     def test_utils(self):
         # test_20
@@ -187,6 +210,17 @@ class TestNagisa(unittest.TestCase):
 
         nagisa.train.mecab_system_eval.print_eval(r)
         self.assertEqual(r, expected_r)
+
+    def test_stopwords(self):
+        # test_31
+        output = 135
+        num_nagisa_stopwords = len(nagisa.stopwords)
+        self.assertEqual(output, num_nagisa_stopwords)
+
+        # test_32
+        output = "~"
+        stopword = nagisa.stopwords[0]
+        self.assertEqual(output, stopword)
 
 
 def suite():
