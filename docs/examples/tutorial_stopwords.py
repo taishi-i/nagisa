@@ -1,9 +1,11 @@
-from datasets import load_dataset
+import nagisa
 
-dataset = load_dataset("taishi-i/nagisa_stopwords")
+text = "日本語のストップワードを簡単に利用できます。"
+tokens = nagisa.tagging(text)
+print(tokens.words)
+# => ['日本', '語', 'の', 'ストップ', 'ワード', 'を', '簡単', 'に', '利用', 'でき', 'ます', '。']
 
-# the top 100 most commonly used words
-words = dataset["nagisa_stopwords"]["words"]
-
-# the part-of-speech list for the top 100 most commonly used words
-postags = dataset["nagisa_stopwords"]["postags"]
+# Filter out stopwords from the tokenized result
+words = [word for word in tokens.words if word not in nagisa.stopwords]
+print(words)
+# => ['日本', '語', 'ストップ', 'ワード', '簡単', '利用', '。']

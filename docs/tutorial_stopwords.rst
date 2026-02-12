@@ -16,19 +16,13 @@ to install the libraries used in this tutorial.
 .. code-block:: bash
 
     pip install nagisa
-    pip install datasets
 
 
 Get stopwords
 --------------
 
-This is a stopword list of frequently used words in the Japanese language,
-created according to the tokenization rules of the Japanese text analysis library, nagisa.
+Nagisa provides a built-in Japanese stopwords list. You can use `nagisa.stopwords` to easily filter out common Japanese stopwords (such as particles and auxiliary verbs) from tokenized results.
 
-This list is constructed by extracting the top 100 most commonly used words
-from the CC-100 dataset and Wikipedia.
-
-To access this list of words, simply run the provided program code below.
 
 .. code-block:: bash
 
