@@ -43,7 +43,7 @@ Supported Platforms:
 Basic usage
 =============
 
-Sample of word segmentation and POS-tagging for Japanese.
+Sample of word segmentation and POS-tagging for Japanese. The output tokens are normalized by unicodedata.normalize('NFKC', text).
 
 ```python
 import nagisa
@@ -99,6 +99,21 @@ print(new_tagger.tagging(text))
 #=> 3/名詞 月/名詞 に/助詞 見/動詞 た/助動詞 「/補助記号 3月のライオン/名詞 」/補助記号
 ```
 
+Nagisa provides a built-in Japanese stopwords list. You can use `nagisa.stopwords` to easily filter out common Japanese stopwords (such as particles and auxiliary verbs) from tokenized results.
+
+```python
+import nagisa
+
+text = "日本語のストップワードを簡単に利用できます。"
+tokens = nagisa.tagging(text)
+print(tokens.words)
+#=> ['日本', '語', 'の', 'ストップ', 'ワード', 'を', '簡単', 'に', '利用', 'でき', 'ます', '。']
+
+# Filter out stopwords from the tokenized result
+words = [word for word in tokens.words if word not in nagisa.stopwords]
+print(words)
+#=> ['日本', '語', 'ストップ', 'ワード', '簡単', '利用', '。']
+```
 
 Train a model
 ======
