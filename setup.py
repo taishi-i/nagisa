@@ -35,6 +35,8 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: 3.14',
     'Operating System :: Unix',
     'Operating System :: MacOS :: MacOS X',
     'Operating System :: Microsoft :: Windows',
@@ -75,7 +77,7 @@ def extensions():
 def switch_install_requires():
     major = sys.version_info.major
     minor = sys.version_info.minor
-    if os.name == 'posix' and major == 3 and minor > 7:
+    if major == 3 and minor > 7:
         return ['six', 'numpy', 'DyNet38']
     else:
         return ['six', 'numpy', 'DyNet']
@@ -86,12 +88,12 @@ setup(
     packages=['nagisa'],
     author='Taishi Ikeda',
     author_email='taishi.ikeda.0323@gmail.com',
-    version='0.2.11',
+    version='0.2.12',
     description='A Japanese tokenizer based on recurrent neural networks',
     long_description_content_type="text/markdown",
     long_description=long_description,
     url='https://github.com/taishi-i/nagisa',
-    download_url='https://github.com/taishi-i/nagisa/archive/0.2.11.tar.gz',
+    download_url='https://github.com/taishi-i/nagisa/archive/0.2.12.tar.gz',
     license='MIT License',
     platforms='Unix',
     setup_requires=['six', 'cython', 'numpy'],

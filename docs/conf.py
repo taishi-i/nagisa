@@ -20,13 +20,13 @@ sys.path.insert(0, os.path.abspath('../nagisa'))
 # -- Project information -----------------------------------------------------
 
 project = 'nagisa'
-copyright = '2024, Taishi Ikeda'
+copyright = '2026, Taishi Ikeda'
 author = 'Taishi Ikeda'
 
 # The short X.Y version
-version = '0.2.11'
+version = '0.2.12'
 # The full version, including alpha/beta/rc tags
-release = '0.2.11'
+release = '0.2.12'
 
 
 # -- General configuration ---------------------------------------------------
