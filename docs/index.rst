@@ -48,4 +48,5 @@ you can use a Japanese tokenizer and POS tagger in easy way.
    tutorial
    tutorial_ner
    tutorial_stopwords
+   tutorial_topic_model
    nagisa_api
