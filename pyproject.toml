@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools", "Cython", "numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nagisa"
+
+dynamic = ["version"]
+description = "A Japanese tokenizer based on recurrent neural networks"
+readme = "README.md"
+license = { text = "MIT License" }
+authors = [
+    { name = "Taishi Ikeda", email = "taishi.ikeda.0323@gmail.com" },
+]
+dependencies = [
+    "six",
+    "numpy",
+    "DyNet38; python_version >= '3.8'",
+    "DyNet; python_version < '3.8'",
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Japanese",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: Unix",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/taishi-i/nagisa"
+Repository = "https://github.com/taishi-i/nagisa"
+Documentation = "https://nagisa.readthedocs.io/en/latest/"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.setuptools]
+packages = ["nagisa"]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "nagisa.version" }
+
+[tool.setuptools.package-data]
+nagisa = ["data/*", "data/sample_datasets/*", "*.pyx"]
