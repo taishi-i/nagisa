@@ -7,7 +7,7 @@ import re
 import sys
 
 import nagisa_utils as utils
-import nagisa.model as model
+import nagisa.np_model as model
 
 base = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(base)
@@ -74,7 +74,6 @@ class Tagger(object):
                                          dictionary=self._word2id,
                                          window_size=self._hp['WINDOW_SIZE'])
         obs  = self._model.encode_ws(feats)
-        obs  = [ob.npvalue() for ob in obs]
         tags = utils.np_viterbi(self._model.trans_array, obs)
 
         # A word can be recognized as a single word forcibly.

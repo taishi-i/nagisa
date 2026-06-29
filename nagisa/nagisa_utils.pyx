@@ -9,6 +9,9 @@ import codecs
 import numpy as np
 import unicodedata
 
+cimport cython
+from libc.math cimport expf, tanhf
+
 from six.moves import cPickle
 
 reload(sys)
@@ -231,37 +234,110 @@ cpdef load_data(fn):
         return cPickle.load(gf)
 
 
-cpdef list np_viterbi(trans, observations):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef void _lstm_direction(float[:, ::1] XG, float[:, ::1] WhT,
+                          float[::1] g, float[::1] h, float[::1] c,
+                          float[:, ::1] H, int col_off, bint reverse):
+    """One LSTM direction over precomputed inputs XG[t] = Wx*x_t + b
+    (already includes the forget-gate bias). Gate columns are packed as
+    [i, f, o, g], DyNet VanillaLSTM semantics. Writes hidden states into
+    H[:, col_off:col_off+h]; for the backward direction (reverse=True)
+    XG is over the reversed input and outputs land at T-1-t."""
     cdef:
-        int idx, best_tag_id
-        list bptrs_t, vvars_t, backpointer, indice, best_path
+        int T = XG.shape[0]
+        int h4 = XG.shape[1]
+        int hd = h4 // 4
+        int t, row, j, k
+        float hk, ct
 
-    for_expr = np.array([-1e10]*6)
-    for_expr[4] = 0 # sp_s = 4
-    indice = [0,1,2,3,4,5]
-    backpointer = []
+    for j in range(hd):
+        h[j] = 0
+        c[j] = 0
 
-    for obs in observations:
-        bptrs_t = []
-        vvars_t = []
-        for idx in indice:
-            next_tag_expr = for_expr+trans[idx]
-            best_tag_id = np.argmax(next_tag_expr)
-            bptrs_t.append(best_tag_id)
-            vvars_t.append(next_tag_expr[best_tag_id])
-        for_expr = np.array(vvars_t) + obs
-        backpointer.append(bptrs_t)
+    for t in range(T):
+        for j in range(h4):
+            g[j] = XG[t, j]
+        for k in range(hd):
+            hk = h[k]
+            for j in range(h4):
+                g[j] += hk * WhT[k, j]
+        row = T - 1 - t if reverse else t
+        for j in range(hd):
+            ct = ((1.0 / (1.0 + expf(-g[hd + j]))) * c[j]
+                  + (1.0 / (1.0 + expf(-g[j]))) * tanhf(g[3 * hd + j]))
+            c[j] = ct
+            h[j] = (1.0 / (1.0 + expf(-g[2 * hd + j]))) * tanhf(ct)
+            H[row, col_off + j] = h[j]
 
-    terminal_expr = for_expr + trans[5] # sp_e = 5
-    best_tag_id = np.argmax(terminal_expr)
-    best_path = [best_tag_id]
 
-    for bptrs_t in reversed(backpointer):
-        best_tag_id = bptrs_t[best_tag_id]
-        best_path.append(best_tag_id)
+def birnn_transduce(XGf, XGb, WhTf, WhTb):
+    """Fused BiLSTM layer recurrence: returns H (T, 2h) float32 where
+    H[t] = [forward state at t, backward state for position t]."""
+    cdef int T = XGf.shape[0]
+    cdef int hd = WhTf.shape[0]
+    H_arr = np.empty((T, 2 * hd), dtype=np.float32)
+    cdef float[:, ::1] H = H_arr
+    cdef float[::1] g = np.empty(4 * hd, dtype=np.float32)
+    cdef float[::1] h = np.empty(hd, dtype=np.float32)
+    cdef float[::1] c = np.empty(hd, dtype=np.float32)
+    _lstm_direction(XGf, WhTf, g, h, c, H, 0, False)
+    _lstm_direction(XGb, WhTb, g, h, c, H, hd, True)
+    return H_arr
 
-    best_path.pop()
-    best_path.reverse()
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef list np_viterbi(trans, observations):
+    # Typed-C reimplementation of the original numpy recursion. The
+    # arithmetic is identical: scores accumulate in float64 (the original
+    # for_expr was float64 and upcast the float32 trans/observation rows)
+    # and ties keep the lowest tag id, like np.argmax.
+    cdef:
+        int T = len(observations)
+        int t, j, k, cur
+        double best, val
+        double fe[6]
+        double vv[6]
+        list best_path
+
+    if T == 0:
+        return []
+
+    cdef double[:, ::1] tr = np.ascontiguousarray(trans, dtype=np.float64)
+    cdef double[:, ::1] ob = np.ascontiguousarray(observations, dtype=np.float64)
+    cdef long long[:, ::1] bp = np.empty((T, 6), dtype=np.int64)
+
+    for j in range(6):
+        fe[j] = -1e10
+    fe[4] = 0 # sp_s = 4
+
+    for t in range(T):
+        for j in range(6):
+            best = fe[0] + tr[j, 0]
+            cur = 0
+            for k in range(1, 6):
+                val = fe[k] + tr[j, k]
+                if val > best:
+                    best = val
+                    cur = k
+            vv[j] = best
+            bp[t, j] = cur
+        for j in range(6):
+            fe[j] = vv[j] + ob[t, j]
+
+    best = fe[0] + tr[5, 0] # sp_e = 5
+    cur = 0
+    for k in range(1, 6):
+        val = fe[k] + tr[5, k]
+        if val > best:
+            best = val
+            cur = k
+
+    best_path = [0]*T
+    for t in range(T-1, -1, -1):
+        best_path[t] = cur
+        cur = bp[t, cur]
     return best_path
 
 
