@@ -8,7 +8,6 @@ import logging
 from collections import OrderedDict
 
 
-import model
 import prepro
 import mecab_system_eval
 import nagisa_utils as utils
@@ -56,6 +55,8 @@ def fit(train_file, dev_file, test_file, model_name,
           save the three model files (*.vocabs, *.params, *.hp) in the current directory.
 
     """
+
+    import model
 
     random.seed(seed)
 

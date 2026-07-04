@@ -2,7 +2,6 @@
 
 from __future__ import division, print_function, absolute_import
 
-import codecs
 
 import numpy as np
 
@@ -15,7 +14,7 @@ PAD = utils.PAD
 def embedding_loader(fn_embedding, word2id, init_range=0.1):
     # load a pre-trained embedding file (word2vec format)
     word2vec = {}
-    with codecs.open(fn_embedding, 'r', encoding='utf_8_sig') as f:
+    with open(fn_embedding, 'r', encoding='utf_8_sig') as f:
         for i, line in enumerate(f):
             line = line.rstrip()
             if i == 0:
@@ -61,7 +60,7 @@ def create_vocabs_from_trainset(trainset, threshold=2,
     # Creat a word-to-POStags dictionary.
     word2postags = {}
     if fn_dictionary is not None:
-        with codecs.open(fn_dictionary, 'r', encoding='utf_8_sig') as texts:
+        with open(fn_dictionary, 'r', encoding='utf_8_sig') as texts:
             for text in texts:
                 text = utils.utf8rstrip(text)
                 word, postag = text.split('\t')
@@ -86,7 +85,7 @@ def create_vocabs_from_trainset(trainset, threshold=2,
     bi2id   = {}
     word2id = {}
     pos2id  = {oov:0}
-    with codecs.open(trainset, 'r', encoding='utf_8_sig') as texts:
+    with open(trainset, 'r', encoding='utf_8_sig') as texts:
         for text in texts:
             text = utils.utf8rstrip(text)
             if text == newline:
@@ -148,7 +147,7 @@ class from_file(object):
         else:
             self.use_noun_heuristic = False
 
-        with codecs.open(filename, 'r', encoding='utf_8_sig') as texts:
+        with open(filename, 'r', encoding='utf_8_sig') as texts:
             wids  = [] # Word index
             cids  = [] # Character index
             pids  = [] # POStag index
