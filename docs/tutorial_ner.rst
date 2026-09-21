@@ -12,8 +12,13 @@ by using Kyoto University Web Document Leads Corpus(KWDLC).
 Download the dataset
 --------------------
 
-Please download KWDLC from http://nlp.ist.i.kyoto-u.ac.jp/EN/index.php?KWDLC manually.
-Copy the corpus to the working directory.
+KWDLC is distributed on GitHub (https://github.com/ku-nlp/KWDLC).
+Clone the repository to the working directory.
+This tutorial uses version 1.1.1 of KWDLC.
+
+.. code-block:: bash
+
+    git clone --depth 1 --branch v1.1.1 https://github.com/ku-nlp/KWDLC
 
 
 Install python libraries
@@ -25,7 +30,6 @@ to install the libraries used in this tutorial.
 
     pip install nagisa
     pip install seqeval
-    pip install beautifulsoup4
 
 
 Preprocess the dataset
@@ -36,8 +40,11 @@ The input data format of the train/dev/test files is the tsv format.
 The Each line is word and tag and one line is represented by **word \\t tag**.
 Note that you put **EOS** between sentences.
 
-This preprocess is a little complicated, so please copy the code below and run it.
-After running the code, **kwdlc.txt** is output to the working directory.
+In the KNP format files of KWDLC (``KWDLC/knp/``), a named entity is annotated
+with a tag such as ``<NE:ORGANIZATION:京都大学>`` on a basic phrase line (a line starting with ``+``).
+The code below converts these annotations into word-level tags in the IOB2 format (``B-TYPE``, ``I-TYPE`` and ``O``).
+It also splits the corpus into the train/dev/test sets by using the official split of the document IDs (``KWDLC/id/split_for_pas/``).
+After running the code, **kwdlc.train**, **kwdlc.dev** and **kwdlc.test** are output to the working directory.
 
 
 .. code-block:: bash
@@ -50,6 +57,22 @@ After running the code, **kwdlc.txt** is output to the working directory.
     :name: tutorial_preprocess_kwdlc.py
     :language: python
     :linenos:
+
+This is an example of the converted data.
+
+.. code-block:: text
+
+    フランコ	B-PERSON
+    ・	I-PERSON
+    モスキーノ	I-PERSON
+    は	O
+    １９５０	B-DATE
+    年	I-DATE
+    イタリア	B-LOCATION
+    に	O
+    生まれる	O
+    。	O
+    EOS
 
 
 Train a model
@@ -74,11 +97,8 @@ This is a log of the training process.
 
 .. code-block:: python
 
-    [dynet] random seed: 1234
-    [dynet] allocating memory: 32MB
-    [dynet] memory allocation done.
     [nagisa] LAYERS: 1
-    [nagisa] THRESHOLD: 3
+    [nagisa] THRESHOLD: 2
     [nagisa] DECAY: 1
     [nagisa] EPOCH: 10
     [nagisa] WINDOW_SIZE: 3
@@ -100,24 +120,24 @@ This is a log of the training process.
     [nagisa] MODEL: kwdlc_ner_model.params
     [nagisa] VOCAB: kwdlc_ner_model.vocabs
     [nagisa] EPOCH_MODEL: kwdlc_ner_model_epoch.params
-    [nagisa] NUM_TRAIN: 3816
-    [nagisa] NUM_TEST: 477
-    [nagisa] NUM_DEV: 477
-    [nagisa] VOCAB_SIZE_UNI: 1838
-    [nagisa] VOCAB_SIZE_BI: 12774
-    [nagisa] VOCAB_SIZE_WORD: 4809
-    [nagisa] VOCAB_SIZE_POSTAG: 29
+    [nagisa] NUM_TRAIN: 12271
+    [nagisa] NUM_TEST: 2195
+    [nagisa] NUM_DEV: 1585
+    [nagisa] VOCAB_SIZE_UNI: 2295
+    [nagisa] VOCAB_SIZE_BI: 26344
+    [nagisa] VOCAB_SIZE_WORD: 9748
+    [nagisa] VOCAB_SIZE_POSTAG: 20
     Epoch	LR   	Loss 	Time_m	DevWS_f1	DevPOS_f1	TestWS_f1	TestPOS_f1
-    1    	0.100	15.09	0.632	92.41   	83.14   	91.70   	82.63
-    2    	0.100	8.818	0.637	93.59   	85.59   	93.21   	85.28
-    3    	0.100	6.850	0.637	93.98   	85.60   	93.75   	86.01
-    4    	0.100	5.751	0.634	94.44   	87.29   	94.01   	86.99
-    5    	0.050	5.028	0.614	94.35   	87.02   	94.01   	86.99
-    6    	0.050	3.727	0.647	94.84   	87.52   	94.79   	87.91
-    7    	0.025	3.268	0.613	94.52   	87.45   	94.79   	87.91
-    8    	0.012	2.761	0.610	94.75   	87.58   	94.79   	87.91
-    9    	0.012	2.447	0.634	94.95   	87.79   	95.00   	88.28
-    10   	0.006	2.333	0.624	94.73   	87.41   	95.00   	88.28
+    1    	0.100	6.536	1.596	93.42   	88.54   	95.56   	92.06
+    2    	0.100	3.711	1.610	94.39   	89.64   	96.08   	92.70
+    3    	0.100	2.912	1.615	94.62   	90.26   	96.46   	93.52
+    4    	0.100	2.431	1.676	94.79   	90.80   	96.47   	93.66
+    5    	0.100	2.081	1.692	94.83   	90.77   	96.52   	93.82
+    6    	0.100	1.768	1.672	95.10   	91.14   	96.51   	93.68
+    7    	0.100	1.589	1.892	95.18   	91.31   	96.58   	93.90
+    8    	0.050	1.399	1.758	95.00   	90.95   	96.58   	93.90
+    9    	0.050	1.014	1.869	95.45   	91.41   	96.70   	93.98
+    10   	0.025	0.865	1.591	95.26   	91.22   	96.70   	93.98
 
 
 Predict
@@ -140,7 +160,7 @@ You can build the tagger only by loading the three trained model files (kwdlc_ne
 Error analysis
 --------------
 
-By checking tag-level accuracy/entity-level macro-f1/classification_report, you can see what the model is wrong with.
+By checking tag-level accuracy/entity-level micro-f1/classification_report, you can see what the model is wrong with.
 
 .. code-block:: bash
 
@@ -153,22 +173,26 @@ By checking tag-level accuracy/entity-level macro-f1/classification_report, you 
     :language: python
     :linenos:
 
+This is the result of the error analysis on the test set.
+
 .. code-block:: python
 
-    accuracy: 0.9166868198307134
-    macro-f1: 0.5900383141762452
-                      precision    recall  f1-score   support
+    accuracy: 0.9671861495999331
+    micro-f1: 0.5798764342453663
+                  precision    recall  f1-score   support
 
-        ARTIFACT       0.33      0.35      0.34        86
-        OPTIONAL       0.32      0.19      0.24        31
-    ORGANIZATION       0.40      0.33      0.36       109
-            DATE       0.84      0.87      0.86       154
-        LOCATION       0.64      0.68      0.66       262
-           MONEY       0.88      0.88      0.88        16
-          PERSON       0.44      0.62      0.51        94
-            TIME       0.40      0.44      0.42         9
-         PERCENT       0.75      0.50      0.60         6
+        ARTIFACT       0.24      0.27      0.26       114
+            DATE       0.79      0.79      0.79       245
+        LOCATION       0.69      0.69      0.69       399
+           MONEY       0.90      0.90      0.90        20
+        OPTIONAL       0.25      0.09      0.13        35
+    ORGANIZATION       0.33      0.40      0.36       168
+         PERCENT       0.75      0.75      0.75         8
+          PERSON       0.50      0.53      0.51       118
+            TIME       0.25      0.12      0.17        16
 
-     avg / total       0.58      0.60      0.59       767
+       micro avg       0.57      0.59      0.58      1123
+       macro avg       0.52      0.50      0.51      1123
+    weighted avg       0.58      0.59      0.58      1123
 
 

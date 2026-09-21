@@ -32,7 +32,7 @@ def main():
     accuracy = accuracy_score(true_Y, pred_Y)
     print("accuracy: {}".format(accuracy))
     f1 = f1_score(true_Y, pred_Y)
-    print("macro-f1: {}".format(f1))
+    print("micro-f1: {}".format(f1))
     report = classification_report(true_Y, pred_Y)
     print(report)
 

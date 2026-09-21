@@ -1,127 +1,104 @@
-import bs4
-import glob
+import os
+import re
 
 
-def load_kwdlc(dir_path):
-    files = glob.glob(dir_path+"/*/*", recursive=True)
+# e.g., <NE:ORGANIZATION:京都大学>
+NE_PATTERN = re.compile(r"<NE:([A-Z]+):([^>]+)>")
 
+
+def find_ne_span(words, ne, phrase_start, phrase_end):
+    # An NE tag is attached to the basic phrase that contains the last word of the NE,
+    # so search for the words that end in the basic phrase and match the NE string.
+    for end in range(phrase_start + 1, phrase_end + 1):
+        for start in range(end):
+            if "".join(words[start:end]) == ne:
+                return start, end
+    return None
+
+
+def convert_to_iob2_tags(words, phrase_starts, nes):
+    tags = ["O"] * len(words)
+    phrase_ends = phrase_starts[1:] + [len(words)]
+
+    for netype, ne, phrase_id in nes:
+        span = find_ne_span(words, ne, phrase_starts[phrase_id], phrase_ends[phrase_id])
+
+        # Skip an NE that is a part of a word (e.g., 英 in 英語).
+        if span is None:
+            continue
+
+        start, end = span
+        tags[start] = "B-"+netype
+        for i in range(start + 1, end):
+            tags[i] = "I-"+netype
+
+    return tags
+
+
+def load_kwdlc(filename):
     data = []
 
     words = []
-    position2ne = {}
+    phrase_starts = []
+    nes = []
 
-    for fn in files:
-        with open(fn, "r") as f:
-            for line in f:
-                line = line.strip()
-                first_char = line[0]
+    with open(filename, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.rstrip("\n")
 
-                if first_char == "+":
-                    soup = bs4.BeautifulSoup(line, "html.parser")
-                    num_tags = len(soup.contents)
-                    for i in range(num_tags):
-                        if str(type(soup.contents[i])) == "<class 'bs4.element.Tag'>":
-                            if "ne" == soup.contents[i].name:
-                                target = soup.contents[i].attrs["target"]
-                                netype = soup.contents[i].attrs["type"]
+            if line.startswith("+ "):
+                # A basic phrase line may have an NE tag.
+                phrase_starts.append(len(words))
+                match = NE_PATTERN.search(line)
+                if match:
+                    netype, ne = match.groups()
+                    nes.append([netype, ne, len(phrase_starts) - 1])
 
-                                position2ne[len(words)] = [target, netype]
+            elif line.startswith("# ") or line.startswith("* "):
+                continue
 
-                elif first_char == "#" or first_char == "*":
-                    None
+            elif line == "EOS":
+                tags = convert_to_iob2_tags(words, phrase_starts, nes)
+                data.append([words, tags])
 
-                elif line == "EOS":
-                    # process
-                    if len(position2ne) > 0:
-                        positions = position2ne.keys()
-                        for position in positions:
-                            target = position2ne[position][0]
-                            netype = position2ne[position][1]
-
-                    data.append([words, position2ne])
-
-                    # reset
-                    words = []
-                    position2ne = {}
-
-                else:
-                    tokens = line.split()
-                    surface = tokens[0]
-                    words.append(surface)
-
-    return data, position2ne
-
-
-def write_kwdlc_as_single_file(filename, data, position2ne):
-
-    with open(filename, "w") as f:
-        for line in data:
-            words, position2ne = line
-
-            nes = [v[0] for k, v in sorted(position2ne.items(), key=lambda x:x[0])]
-            nes = list(reversed(nes))
-
-            tags = [v[1] for k, v in sorted(position2ne.items(), key=lambda x:x[0])]
-            tags = list(reversed(tags))
-
-            if len(nes) == 0:
-                None
+                # reset
+                words = []
+                phrase_starts = []
+                nes = []
 
             else:
-                ne_tags = []
+                # The first field of a morpheme line is the surface form.
+                surface = line.split(" ")[0]
+                words.append(surface)
 
-                ne = nes.pop()
-                tag = tags.pop()
-                ne_target_char = ne[0]
-
-                partical = []
-                for word in words:
-                    first_char = word[0]
-                    if first_char == ne_target_char:
-
-                        if word in ne:
-                            partical.append(word)
-
-                            if "".join(partical) == ne:
-
-                                for i, word in enumerate(partical):
-                                    if i == 0:
-                                        ne_tags.append("B-"+tag)
-                                    elif i == len(partical) - 1:
-                                        ne_tags.append("E-"+tag)
-                                    else:
-                                        ne_tags.append("M-"+tag)
-
-                                if len(nes) > 0:
-                                    ne = nes.pop()
-                                    tag = tags.pop()
-                                    ne_target_char = ne[0]
-
-                                partical = []
-
-                            else:
-                                ne_target_char = ne[len("".join(partical))]
-
-                        else:
-                            partical = []
-                            ne_tags.append("O")
-
-                    else:
-                        partical = []
-                        ne_tags.append("O")
+    return data
 
 
-                for word, ne_tag in zip(words, ne_tags):
-                    f.write("\t".join([word, ne_tag])+"\n")
-                f.write("EOS\n")
+def write_file(filename, data):
+    with open(filename, "w", encoding="utf-8") as f:
+        for words, tags in data:
+            for word, tag in zip(words, tags):
+                f.write("\t".join([word, tag])+"\n")
+            f.write("EOS\n")
 
 
 def main():
-    dir_path = "./KWDLC-1.0/dat/rel"
-    data, position2ne = load_kwdlc(dir_path)
+    kwdlc_dir = "./KWDLC"
 
-    fn_out = "kwdlc.txt"
-    write_kwdlc_as_single_file(fn_out, data, position2ne)
+    for split in ["train", "dev", "test"]:
+        # Use the official train/dev/test split of the documents.
+        fn_id = os.path.join(kwdlc_dir, "id", "split_for_pas", split+".id")
+        with open(fn_id, "r", encoding="utf-8") as f:
+            doc_ids = [line.strip() for line in f if line.strip()]
+
+        data = []
+        for doc_id in doc_ids:
+            # e.g., ./KWDLC/knp/w201106-00000/w201106-0000060050.knp
+            fn_knp = os.path.join(kwdlc_dir, "knp", doc_id[:13], doc_id+".knp")
+            data += load_kwdlc(fn_knp)
+
+        fn_out = "kwdlc."+split
+        write_file(fn_out, data)
 
 
 if __name__ == "__main__":
