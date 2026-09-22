@@ -5,7 +5,7 @@ Basic usage
 Word identification is a fundamental step in processing of languages
 that have no word boundaries such as Japanese and Chinese.
 Nagisa provides a set of functions for Japanese natural language processing.
-You can easyily use Japanese word segmentation and POS-tagging
+You can easily use Japanese word segmentation and POS-tagging
 by referring to the sample code below.
 
 
@@ -43,7 +43,7 @@ The Output words can be controlled by POS-tags.
 
 .. code-block:: python
 
-    # Extarcting all nouns from a text
+    # Extracting all nouns from a text
     words = nagisa.extract(text, extract_postags=['名詞'])
     print(words)
     #=> Python/名詞 ツール/名詞
@@ -55,7 +55,7 @@ The Output words can be controlled by POS-tags.
 
     # A list of available POS-tags
     print(nagisa.tagger.postags)
-    #=> ['補助記号', '名詞', ... , 'URL']
+    #=> ['oov', '補助記号', '名詞', ... , 'ローマ字文']
 
 
 Add the user dictionary in easy way.

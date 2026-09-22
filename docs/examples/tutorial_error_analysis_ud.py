@@ -65,4 +65,8 @@ if __name__ == "__main__":
 
     # create a confusion matrix if tagger make a mistake in prediction.
     cm_labeled = create_confusion_matrix(ud_tagger, test_X, test_Y)
+
+    # show all columns without truncation
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.width", 200)
     print(cm_labeled)

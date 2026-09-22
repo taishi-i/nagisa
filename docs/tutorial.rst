@@ -13,9 +13,9 @@ Download the dataset
 
 Before we get started,
 please run the command ``$ pip install nagisa`` to install the nagisa library.
-After installing it, download the Japanese UD treebank from UD_Japanese-GDS_.
+After installing it, download the Japanese UD treebank from UD_Japanese-GSD_.
 
-.. _UD_Japanese-GDS: https://github.com/UniversalDependencies/UD_Japanese-GSD
+.. _UD_Japanese-GSD: https://github.com/UniversalDependencies/UD_Japanese-GSD
 
 .. code-block:: bash
 
@@ -45,11 +45,8 @@ This is a log of the training process.
 
 .. code-block:: python
 
-    [dynet] random seed: 1234
-    [dynet] allocating memory: 32MB
-    [dynet] memory allocation done.
     [nagisa] LAYERS: 1
-    [nagisa] THRESHOLD: 3
+    [nagisa] THRESHOLD: 2
     [nagisa] DECAY: 1
     [nagisa] EPOCH: 10
     [nagisa] WINDOW_SIZE: 3
@@ -71,24 +68,24 @@ This is a log of the training process.
     [nagisa] MODEL: ja_gsd_ud.params
     [nagisa] VOCAB: ja_gsd_ud.vocabs
     [nagisa] EPOCH_MODEL: ja_gsd_ud_epoch.params
-    [nagisa] NUM_TRAIN: 7133
-    [nagisa] NUM_TEST: 551
-    [nagisa] NUM_DEV: 511
-    [nagisa] VOCAB_SIZE_UNI: 2352
-    [nagisa] VOCAB_SIZE_BI: 25108
-    [nagisa] VOCAB_SIZE_WORD: 9143
+    [nagisa] NUM_TRAIN: 7050
+    [nagisa] NUM_TEST: 543
+    [nagisa] NUM_DEV: 507
+    [nagisa] VOCAB_SIZE_UNI: 2340
+    [nagisa] VOCAB_SIZE_BI: 24792
+    [nagisa] VOCAB_SIZE_WORD: 8724
     [nagisa] VOCAB_SIZE_POSTAG: 17
     Epoch	LR   	Loss 	Time_m	DevWS_f1	DevPOS_f1	TestWS_f1	TestPOS_f1
-    1    	0.100	13.37	1.462	91.84   	87.75   	91.63   	87.35
-    2    	0.100	6.280	1.473	92.57   	89.67   	92.44   	89.15
-    3    	0.100	4.961	1.535	93.54   	90.98   	93.62   	90.18
-    4    	0.050	4.256	1.430	92.52   	90.19   	93.62   	90.18
-    5    	0.025	3.200	1.443	93.46   	91.06   	93.62   	90.18
-    6    	0.025	2.581	1.512	93.56   	91.49   	93.88   	91.29
-    7    	0.025	2.379	1.475	93.58   	91.50   	93.73   	91.15
-    8    	0.025	2.218	1.476	93.63   	91.57   	93.92   	91.31
-    9    	0.025	2.122	1.475	93.78   	91.63   	94.09   	91.40
-    10   	0.012	1.985	1.434	93.55   	91.39   	94.09   	91.40
+    1    	0.100	11.37	0.584	96.57   	92.69   	96.85   	92.32
+    2    	0.100	4.656	0.585	97.04   	93.64   	97.63   	94.04
+    3    	0.100	3.543	0.589	97.60   	94.64   	97.66   	94.56
+    4    	0.050	2.930	0.573	97.37   	94.69   	97.66   	94.56
+    5    	0.050	2.075	0.666	97.72   	95.06   	98.08   	95.50
+    6    	0.025	1.786	0.572	97.54   	95.11   	98.08   	95.50
+    7    	0.025	1.451	0.587	97.79   	95.36   	98.13   	95.62
+    8    	0.025	1.325	0.586	97.79   	95.28   	98.14   	95.61
+    9    	0.025	1.247	0.589	97.80   	95.44   	98.13   	95.71
+    10   	0.012	1.204	0.570	97.76   	95.27   	98.13   	95.71
 
 Predict
 -------
@@ -115,24 +112,26 @@ The code shows how to create a confusion matrix by comparing the predicted tags 
     :linenos:
 
 This is a confusion matrix if tagger make a mistake in prediction.
-This confusion matrix shows that the tagger often mistakes "NOUN" for "PROPN"
-in this UD_Japanese-GDS dataset.
+This confusion matrix shows that the tagger often confuses "NOUN" and "PROPN"
+(NOUN is predicted as PROPN 60 times, and PROPN as NOUN 50 times)
+in this UD_Japanese-GSD dataset.
 
-.. code-block:: python
+.. code-block:: text
 
-                   AUX  VERB  NOUN  ADV  PRON  PART  PUNCT  SYM  ADJ  PROPN  CCONJ  SCONJ  ADP  NUM  INTJ
-           AUX      0    16     2    0     0     0      0    0    2      0      0      1   25    0     0
-           VERB    14     0    23    0     1     0      0    0    2      0      0      1    0    0     0
-           NOUN     0    12     0    5     1     0      1    0   16    101      0      1    1    2     0
-           ADV      0     2     8    0     0     1      0    0    2      1      2      0    0    0     0
-           PRON     0     3     6    1     0     0      0    0    1      0      0      0    0    0     0
-           PART     1     0     4    0     0     0      0    0    0      0      0      0    0    0     0
-           PUNCT    0     0     2    0     0     0      0    2    0      0      0      0    0    0     0
-           SYM      0     0     0    0     0     0      0    0    0      0      0      0    0    1     0
-           ADJ      8     6    41    3     0     1      0    0    0      4      0      0    0    0     0
-           PROPN    0     2    65    0     0     0      0    0    0      0      1      0    0    1     0
-           CCONJ    0     0     1    2     0     0      0    0    0      0      0      0    0    0     0
-           SCONJ    1     0     1    0     0     0      0    0    0      0      0      0    2    0     0
-           ADP      4     0     0    0     0     0      0    0    0      0      0      7    0    0     0
-           NUM      0     0     1    0     0     0      0    0    0      0      0      0    0    0     0
-           INTJ     0     0     0    1     0     0      0    0    0      0      0      0    0    0     0
+           ADJ  ADV  NOUN  PROPN  AUX  PART  DET  ADP  VERB  SCONJ  PRON  PUNCT  CCONJ  NUM  SYM  INTJ
+    ADJ      0    2    32      2   11     0    0    1     5      0     0      0      0    0    0     0
+    ADV      4    0    23      4    0     0    0    0     4      0     0      0      1    0    0     0
+    NOUN    13    5     0     60    2     0    0    1    14      1     0      0      0    0    0     0
+    PROPN    0    0    50      0    0     0    0    0     1      0     0      0      0    1    0     0
+    AUX      4    0     0      0    0     1    0   19     6      1     0      0      0    0    0     0
+    PART     1    0     4      1    2     0    0    4     1      0     0      0      0    0    0     0
+    DET      0    0     0      0    0     0    0    2     2      0     0      0      0    0    0     0
+    ADP      0    2     2      0   13     4    0    0     0      3     0      0      0    0    0     0
+    VERB     2    2    19      0    4     0    1    0     0      2     0      0      0    0    0     0
+    SCONJ    0    0     2      0    5     0    0    4     1      0     0      0      0    0    0     0
+    PRON     0    0     5      0    0     0    0    0     2      0     0      0      0    0    0     0
+    PUNCT    0    0     2      0    0     0    0    0     0      0     0      0      0    0    0     0
+    CCONJ    0    0     0      0    2     0    0    0     0      0     0      0      0    0    0     0
+    NUM      0    0     3      0    0     0    0    0     0      0     0      0      0    0    0     0
+    SYM      0    0     1      0    0     0    0    0     0      0     0      0      0    0    0     0
+    INTJ     0    0     0      0    0     0    0    0     1      0     0      0      0    0    0     0
