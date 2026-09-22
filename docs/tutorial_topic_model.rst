@@ -1,6 +1,6 @@
-========================
-Japanese Topic Modeling
-========================
+====================================
+Tutorial (Japanese Topic Modeling)
+====================================
 
 Run topic modeling using the Livedoor News Corpus
 ===================================================
@@ -28,10 +28,10 @@ Run the script
 --------------
 
 Run the following command to download the corpus and extract topics.
-The `Livedoor News Corpus <https://www.rondhuit.com/download.html#ldcc>`_ (~45 MB)
+The `Livedoor News Corpus <https://www.rondhuit.com/download.html#ldcc>`_ (~9 MB)
 is downloaded automatically on the first run into the ``ldcc/`` directory.
 By default, the model is built from the **title** of each article (``TEXT_TYPE = "title"``).
-To use the full article body instead, change the value to ``"body"``.
+To use the article body instead, see `Use the article body`_.
 
 .. code-block:: bash
 
@@ -45,72 +45,128 @@ To use the full article body instead, change the value to ``"body"``.
     :linenos:
 
 This is an example of the output.
+The results may differ with other versions of the libraries (we used nagisa 0.3.0 and scikit-learn 1.9.1).
 
 .. code-block:: text
 
-    100%|████████████████████████| 7367/7367 [00:28<00:00, 261.03it/s]
-
     Topic 1:
-        スマートフォン, Android, アプリ, iPhone, スマホ, 端末, 対応, 無料, 利用, サービス
+        女子, 世界, 発言, オトナ, 理由, あなた, 恋愛, 時代, 美人, 独女
 
     Topic 2:
-        映画, 公開, 主演, 出演, 作品, 監督, 俳優, 女優, ドラマ, 役
+        発売, 発表, 終了, プレゼント, 登場, 代表, デジ通, ビデオ, xperia, 生活
 
     Topic 3:
-        選手, 試合, チーム, 得点, 優勝, サッカー, 野球, 監督, シーズン, 日本
+        さん, 写真, 知っ, 虎の巻, すぎる, 結婚, 語る, ススメ, 説教, 自分
 
     Topic 4:
-        家電, 発売, 価格, 製品, メーカー, 対応, 機能, 搭載, カメラ, テレビ
+        映画, アプリ, vol, レビュー, 特集, 独女, 選手, 年収, ゴルフ, 部屋
 
     Topic 5:
-        女性, 男性, 生活, 仕事, 結婚, 子供, 美容, ファッション, 料理, おすすめ
+        watch, sports, 日本, 韓国, ネット, vol, 批判, by, 東京, cafe
 
     Topic 6:
-        サービス, 企業, 事業, 市場, 展開, ビジネス, 提供, 投資, 成長, 戦略
+        android, チェック, 対応, ドコモ, スマホ, 売れ筋, 提供, 搭載, ニュース, 向け
 
     Topic 7:
-        政府, 政治, 経済, 日本, 問題, 社会, 国, 対策, 発表, 制度
+        話題, ntt, スマート, フォン, テレビ, インタビュー, ドコモ, 問題, 利用, 社長
 
     Topic 8:
-        料理, レシピ, 食材, 食べ, 味, 食事, 野菜, 作り, 簡単, おいしい
+        iphone, 公開, ランキング, 動画, 決定, 女性, 開催, 殺到, 出演, ゲーム
 
     Topic 9:
-        音楽, ライブ, アルバム, 曲, アーティスト, 歌, リリース, コンサート, シングル, ツアー
+        開始, レポート, 監督, モデル, 人気, サービス, google, キャンペーン, akb, 好き
 
-Each topic corresponds to one of the 9 news categories in the Livedoor News Corpus.
-By looking at the top words, you can see that the model successfully captures the themes of each category.
+Article titles are short, so many topics mix the words of several categories.
+Some topics have a clear subject.
+For example, Topic 6 (android, チェック, 対応, ドコモ, スマホ) is about smartphones.
+Topic 5 (watch, sports, 日本, 韓国) is about sports, but "watch" and "sports" come from
+the tag 【Sports Watch】 at the beginning of many titles in the sports-watch category.
+
+
+Use the article body
+--------------------
+
+Set ``TEXT_TYPE = "body"`` and run the script again.
+Tokenizing the article bodies takes several minutes.
+This is an example of the output with the article body.
+
+.. code-block:: text
+
+    Topic 1:
+        紹介, 記事, 写真, 画面, アプリ, チェック, 使っ, facebook, 表示, 便利
+
+    Topic 2:
+        さん, 自分, 女性, いい, 結婚, 仕事, 男性, 思っ, 思い, どう
+
+    Topic 3:
+        ネット, 番組, 放送, テレビ, 関連, 記事, 選手, 掲示, 話題, 情報
+
+    Topic 4:
+        プレゼント, 料理, ゴルフ, 東京, 女性, アイテム, 商品, クリスマス, 効果, さん
+
+    Topic 5:
+        映画, 公開, 作品, 世界, 監督, 本作, 映像, 撮影, 日本, ドラマ
+
+    Topic 6:
+        女子, 人気, さん, 彼女, 女性, ファッション, cm, 登場, モデル, ちゃん
+
+    Topic 7:
+        日本, 韓国, 代表, 写真, 世界, akb, チーム, 関連, 監督, 話題
+
+    Topic 8:
+        スマート, フォン, android, アプリ, 更新, max, 利用, サービス, 機能, ソフトウェア
+
+    Topic 9:
+        発売, 搭載, 対応, モデル, カメラ, 発表, 製品, 機能, バッテリー, サイズ
+
+The table shows, for the model built from the article body, how many articles have each topic
+as their most probable topic (the argmax of ``lda.transform(dtm)``) and the most common categories among them.
+The script does not print these counts.
 
 .. list-table::
    :header-rows: 1
-   :widths: 15 30 55
+   :widths: 10 10 35 45
 
    * - Topic
-     - Likely category
-     - Key words
+     - Articles
+     - Most common categories (share)
+     - Top 5 words
    * - Topic 1
-     - smax (smartphones)
-     - スマートフォン, Android, アプリ, iPhone
+     - 342
+     - it-life-hack (48%)
+     - 紹介, 記事, 写真, 画面, アプリ
    * - Topic 2
-     - movie-enter (movies)
-     - 映画, 公開, 主演, 監督
+     - 1,377
+     - dokujo-tsushin (50%)
+     - さん, 自分, 女性, いい, 結婚
    * - Topic 3
-     - sports-watch (sports)
-     - 選手, 試合, チーム, サッカー, 野球
+     - 1,092
+     - topic-news (44%), sports-watch (38%)
+     - ネット, 番組, 放送, テレビ, 関連
    * - Topic 4
-     - kaden-channel (home appliances)
-     - 家電, 発売, 価格, 製品, カメラ
+     - 749
+     - peachy (58%)
+     - プレゼント, 料理, ゴルフ, 東京, 女性
    * - Topic 5
-     - peachy / livedoor-homme (lifestyle)
-     - 女性, 美容, ファッション, おすすめ
+     - 984
+     - movie-enter (77%)
+     - 映画, 公開, 作品, 世界, 監督
    * - Topic 6
-     - it-life-hack (IT / business)
-     - 企業, 市場, ビジネス, サービス
+     - 218
+     - peachy (31%)
+     - 女子, 人気, さん, 彼女, 女性
    * - Topic 7
-     - topic-news (general news)
-     - 政府, 政治, 経済, 社会
+     - 673
+     - sports-watch (49%)
+     - 日本, 韓国, 代表, 写真, 世界
    * - Topic 8
-     - people (food / culture)
-     - 料理, レシピ, 食材, 食事
+     - 1,166
+     - smax (53%)
+     - スマート, フォン, android, アプリ, 更新
    * - Topic 9
-     - movie-enter / people (entertainment)
-     - 音楽, ライブ, アルバム, アーティスト
+     - 766
+     - kaden-channel (37%)
+     - 発売, 搭載, 対応, モデル, カメラ
+
+Some topics match a category well, such as movie-enter for Topic 5 (77%) and smax for Topic 8
+("max" comes from "S-MAX"). Topics 3, 6 and 9 mix several categories.

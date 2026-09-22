@@ -24,7 +24,11 @@ def download_corpus():
     resp.raise_for_status()
 
     with tarfile.open(fileobj=io.BytesIO(resp.content), mode="r:*") as tar:
-        tar.extractall(path=".", filter="data")
+        # The filter argument is not available in older Python versions.
+        if hasattr(tarfile, "data_filter"):
+            tar.extractall(path=".", filter="data")
+        else:
+            tar.extractall(path=".")
 
     extracted = "text"
     os.rename(extracted, CORPUS_DIR)
@@ -44,10 +48,11 @@ def load_documents(corpus_dir, text_type=TEXT_TYPE):
             with open(fpath, encoding="utf-8") as f:
                 lines = f.readlines()
 
+            # line 1: URL, line 2: date, line 3: title, line 4-: body
             if text_type == "title":
-                text = lines[3].strip() if len(lines) > 3 else ""
+                text = lines[2].strip() if len(lines) > 2 else ""
             else:
-                text = "".join(lines[2:]).strip()
+                text = "".join(lines[3:]).strip()
 
             if text:
                 documents.append(text)
@@ -58,8 +63,11 @@ def tokenize_documents(documents):
     stopwords = nagisa.stopwords
     tokenized = []
     for doc in tqdm(documents):
-        tokens = nagisa.tagging(doc)
-        words = [w for w in tokens.words if len(w) > 1 and w not in stopwords]
+        # nagisa works on a sentence, so tokenize the text line by line.
+        words = []
+        for line in doc.splitlines():
+            tokens = nagisa.tagging(line)
+            words += [w for w in tokens.words if len(w) > 1 and w not in stopwords]
         tokenized.append(" ".join(words))
     return tokenized
 
