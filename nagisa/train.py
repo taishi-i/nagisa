@@ -2,10 +2,13 @@
 
 from __future__ import division, print_function, absolute_import
 
+import os
 import time
 import random
 import logging
 from collections import OrderedDict
+
+import numpy as np
 
 
 import prepro
@@ -16,6 +19,16 @@ from tagger import Tagger
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
+
+
+def _to_builtin(value):
+    # Model files may only contain plain Python data (see
+    # nagisa_utils.load_data), so convert numpy numbers and paths.
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, os.PathLike):
+        return os.fspath(value)
+    return value
 
 
 def fit(train_file, dev_file, test_file, model_name,
@@ -60,6 +73,7 @@ def fit(train_file, dev_file, test_file, model_name,
 
     random.seed(seed)
 
+    model_name = _to_builtin(model_name)
     hp = OrderedDict({
           'LAYERS':layers,
           'THRESHOLD':min_count,
@@ -87,6 +101,7 @@ def fit(train_file, dev_file, test_file, model_name,
           'VOCAB':model_name+'.vocabs',
           'EPOCH_MODEL':model_name+'_epoch.params'
     })
+    hp = OrderedDict((key, _to_builtin(value)) for key, value in hp.items())
 
 
     # Preprocess

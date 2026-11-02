@@ -11,7 +11,10 @@ from libc.math cimport expf, tanhf
 from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy
 
-from six.moves import cPickle
+import copyreg
+import io
+import pickle
+import pickletools
 
 cdef unicode __OOV = u'oov'
 cdef unicode __PAD = u'pad'
@@ -218,15 +221,55 @@ cpdef list segmenter_for_bmes(unicode chars, list tags):
     return words
 
 
-cpdef dump_data(data, fn):
-    with gzip.open(fn, 'wb') as gf:
-        cPickle.dump(data, gf, protocol=2)
-        gf.close()
+ALLOWED_MODEL_PICKLE_GLOBALS = {("collections", "OrderedDict")}
+
+MODEL_FILE_FORMAT_NOTE = (
+    "Model files may only contain dict, list, str, int, float, None and "
+    "collections.OrderedDict. Models saved by older versions of nagisa.fit() "
+    "with numpy numbers or pathlib.Path arguments contain other objects: "
+    "retrain the model with this version of nagisa, or, if you trust the file, "
+    "load it with pickle and save it again with plain Python values.")
 
 
-cpdef load_data(fn):
-    with gzip.open(fn, 'rb') as gf:
-        return cPickle.load(gf)
+class NagisaModelUnpickler(pickle.Unpickler):
+    def find_class(self, module_name, global_name):
+        if (module_name, global_name) in ALLOWED_MODEL_PICKLE_GLOBALS:
+            return pickle.Unpickler.find_class(self, module_name, global_name)
+        raise pickle.UnpicklingError(
+            "nagisa model file contains an unsupported object: %s.%s. %s"
+            % (module_name, global_name, MODEL_FILE_FORMAT_NOTE))
+
+
+cpdef dump_data(data, model_file_path):
+    with gzip.open(model_file_path, 'wb') as gzip_file:
+        pickle.dump(data, gzip_file, protocol=2)
+
+
+PICKLE_EXTENSION_OPCODE_NAMES = {"EXT1", "EXT2", "EXT4"}
+
+
+def _pickle_extension_cache_is_empty():
+    extension_cache = getattr(copyreg, "_extension_cache", None)
+    return extension_cache is not None and len(extension_cache) == 0
+
+
+def _contains_pickle_extension_opcode(pickle_bytes):
+    for pickle_opcode, opcode_argument, byte_position in pickletools.genops(pickle_bytes):
+        if pickle_opcode.name in PICKLE_EXTENSION_OPCODE_NAMES:
+            return True
+    return False
+
+
+cpdef load_data(model_file_path):
+    with gzip.open(model_file_path, 'rb') as gzip_file:
+        if _pickle_extension_cache_is_empty():
+            return NagisaModelUnpickler(gzip_file).load()
+        pickle_bytes = gzip_file.read()
+    if _contains_pickle_extension_opcode(pickle_bytes):
+        raise pickle.UnpicklingError(
+            "nagisa model file contains unsupported pickle extension codes. %s"
+            % MODEL_FILE_FORMAT_NOTE)
+    return NagisaModelUnpickler(io.BytesIO(pickle_bytes)).load()
 
 
 cdef extern from *:

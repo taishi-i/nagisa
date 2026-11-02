@@ -229,7 +229,7 @@ class TestNagisa(unittest.TestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTests(unittest.makeSuite(TestNagisa))
+    suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(TestNagisa))
     return suite
 
 

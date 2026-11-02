@@ -14,7 +14,6 @@ authors = [
     { name = "Taishi Ikeda", email = "taishi.ikeda.0323@gmail.com" },
 ]
 dependencies = [
-    "six",
     "numpy",
     # DyNet is only used for training (nagisa.fit) and has no wheels for
     # Python 3.15+, so it is not installed there.
