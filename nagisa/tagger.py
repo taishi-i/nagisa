@@ -4,13 +4,11 @@ from __future__ import division, print_function, absolute_import
 
 import os
 import re
-import sys
 
 import nagisa_utils as utils
 import nagisa.np_model as model
 
 base = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(base)
 
 
 class Tagger(object):

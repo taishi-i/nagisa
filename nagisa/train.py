@@ -11,11 +11,11 @@ from collections import OrderedDict
 import numpy as np
 
 
-import prepro
-import mecab_system_eval
 import nagisa_utils as utils
 
-from tagger import Tagger
+from nagisa import prepro
+from nagisa import mecab_system_eval
+from nagisa.tagger import Tagger
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ def fit(train_file, dev_file, test_file, model_name,
 
     """
 
-    import model
+    from nagisa import model
 
     random.seed(seed)
 
