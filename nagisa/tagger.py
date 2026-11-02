@@ -181,7 +181,9 @@ class Tagger(object):
         """
         if not type(words) == list:
             raise AssertionError("Please input a list of words.")
-        words = [utils.preprocess_without_rstrip(w) if w == " " or w == "　"
+        # Keep whitespace-only words (e.g. " ", "\t", "\n") as they are,
+        # since stripping them would leave empty words.
+        words = [utils.preprocess_without_rstrip(w) if w and w.strip() == ""
                  else utils.preprocess(w) for w in words]
         postags = self._postagging(words, lower)
         return postags
