@@ -8,6 +8,7 @@ name = "nagisa"
 dynamic = ["version"]
 description = "A Japanese tokenizer based on recurrent neural networks"
 readme = "README.md"
+requires-python = ">=3.10"
 license = { text = "MIT License" }
 authors = [
     { name = "Taishi Ikeda", email = "taishi.ikeda.0323@gmail.com" },
@@ -15,23 +16,20 @@ authors = [
 dependencies = [
     "six",
     "numpy",
-    "DyNet38; python_version >= '3.8'",
-    "DyNet; python_version < '3.8'",
+    # DyNet is only used for training (nagisa.fit) and has no wheels for
+    # Python 3.15+, so it is not installed there.
+    "DyNet38; python_version < '3.15'",
 ]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: Japanese",
-    "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Operating System :: Unix",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
@@ -56,3 +54,14 @@ version = { attr = "nagisa.version" }
 
 [tool.setuptools.package-data]
 nagisa = ["data/*", "data/sample_datasets/*", "*.pyx"]
+
+[tool.cibuildwheel]
+# The Python versions to build come from requires-python.
+# 64-bit only: NumPy no longer ships 32-bit wheels.
+archs = ["auto64"]
+environment = { PIP_USE_PEP517 = "1" }
+test-command = "python {project}/test/check_wheel.py"
+# DyNet38 has no free-threaded (cp314t) wheels, so these wheels cannot be
+# installed with their dependencies. cp315t works because DyNet is not
+# required on Python 3.15+.
+test-skip = "cp314t-*"

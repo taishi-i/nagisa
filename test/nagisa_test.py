@@ -1,8 +1,11 @@
 # -*- coding:utf-8 -*-
 
 import unittest
+import importlib.util
 
 import nagisa
+
+HAS_DYNET = importlib.util.find_spec("dynet") is not None
 
 
 class TestNagisa(unittest.TestCase):
@@ -163,6 +166,7 @@ class TestNagisa(unittest.TestCase):
 
         self.assertEqual(output, unigrams)
 
+    @unittest.skipUnless(HAS_DYNET, "DyNet is not installed")
     def test_fit(self):
         # test_22
         nagisa.fit(

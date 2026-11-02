@@ -5,22 +5,26 @@ on:
     - cron: "3 0 * * *"
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   smoke:
-    name: Import & basic run on ${{ matrix.os }} / py${{ matrix.python }}
+    name: Install & tag on ${{ matrix.os }} / py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
-
-    permissions:
-      contents: read
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
 
     steps:
+      # Only test/check_wheel.py is used; nagisa itself comes from PyPI.
+      - uses: actions/checkout@v7
+
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
 
@@ -34,9 +38,7 @@ jobs:
           python -m pip install -U pip
           pip install --upgrade --only-binary=:all: nagisa
 
-      - name: Smoke test (import & minimal call)
-        shell: bash
-        run: |
-          python - << 'PY'
-          import nagisa
-          PY
+      - name: Smoke test (tokenize & POS-tag)
+        # Run as a script so the installed package is imported,
+        # not the nagisa/ directory in the checkout.
+        run: python test/check_wheel.py
