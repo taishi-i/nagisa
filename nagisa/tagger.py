@@ -11,9 +11,28 @@ import nagisa.np_model as model
 base = os.path.dirname(os.path.abspath(__file__))
 
 
+def _regex_or_literal(regex, word):
+    """Return a pattern that matches the word as written first, then as a
+    regular expression. A word that is not a valid regular expression
+    (e.g. "C++" on Python 3.10) is matched only as written."""
+    literal = re.escape(word)
+    try:
+        re.compile(regex)
+    except re.error:
+        return literal
+    if literal == regex:
+        return regex
+    return literal + '|' + regex
+
+
 class Tagger(object):
     """
     This class has a word segmentation function and a POS-tagging function for Japanese.
+
+    args:
+        - single_word_list (list, optional): Words that are always recognized \
+                                             as a single word. Each word is matched \
+                                             as written and also as a regular expression.
     """
 
     def __init__(self, vocabs=None, params=None, hp=None, single_word_list=None):
@@ -40,9 +59,12 @@ class Tagger(object):
         self.pattern = None
         if single_word_list:
             single_word_list = [utils.preprocess(w) for w in single_word_list if len(w) > 1]
-            single_word_list = [w.replace('(', r'\(').replace(')', r'\)')
-                                for w in single_word_list]
-            single_word_list = sorted(single_word_list, key=lambda x:-len(x))
+            regex_list = [w.replace('(', r'\(').replace(')', r'\)')
+                          for w in single_word_list]
+            regex_list = sorted(zip(regex_list, single_word_list),
+                                key=lambda x:-len(x[0]))
+            single_word_list = [_regex_or_literal(regex, word)
+                                for regex, word in regex_list]
             if len(single_word_list) > 0:
                 self.pattern = re.compile('|'.join(single_word_list))
 
@@ -80,6 +102,10 @@ class Tagger(object):
                 span = match.span()
                 span_s = span[0]
                 span_e = span[1]
+
+                # Skip empty matches (e.g. "あ*" matches an empty string).
+                if span_e == span_s:
+                    continue
 
                 if (span_e - span_s) == 1:
                     tags[span_s:span_e] = [3]
