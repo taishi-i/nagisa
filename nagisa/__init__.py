@@ -4,7 +4,7 @@ from nagisa.tagger import Tagger
 from nagisa.train import fit
 from nagisa.stopwords import stopwords
 
-version = '0.3.0'
+version = '0.3.1'
 # Initialize instance
 tagger  = Tagger()
 # Functions

@@ -36,9 +36,9 @@ pip install nagisa
 ````
 
 Supported Platforms:
-- 🐧 Linux: Python 3.6 - 3.14
-- 🍎 macOS: Python 3.9 - 3.14
-- 🪟 Windows: Python 3.9 - 3.14
+- 🐧 Linux: Python 3.10 - 3.15
+- 🍎 macOS: Python 3.10 - 3.15
+- 🪟 Windows: Python 3.10 - 3.15
 
 Basic usage
 =============
