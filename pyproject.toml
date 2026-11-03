@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "Cython", "numpy"]
+requires = ["setuptools>=77", "Cython", "numpy"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,7 +9,8 @@ dynamic = ["version"]
 description = "A Japanese tokenizer based on recurrent neural networks"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT License" }
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [
     { name = "Taishi Ikeda", email = "taishi.ikeda.0323@gmail.com" },
 ]
@@ -20,7 +21,6 @@ dependencies = [
     "DyNet38; python_version < '3.15'",
 ]
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: Japanese",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
