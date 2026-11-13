@@ -7,7 +7,6 @@ import numpy as np
 import unicodedata
 
 cimport cython
-from libc.math cimport expf, tanhf
 from libc.stdlib cimport malloc, free
 from libc.string cimport memcpy
 
@@ -72,6 +71,21 @@ cpdef list get_bigram(unicode text):
 
 
 cpdef int get_chartype(unicode character):
+    cdef Py_UCS4 code_point
+    if len(character) == 1:
+        code_point = character
+        if code_point < 0x80:
+            if 0x61 <= code_point <= 0x7a or 0x41 <= code_point <= 0x5a:
+                return 3
+            if 0x30 <= code_point <= 0x39:
+                return 4
+            return 5
+        if 0x3040 <= code_point <= 0x309f:
+            return 0
+        if 0x30a1 <= code_point <= 0x30fa:
+            return 1
+        if 0x4e00 <= code_point <= 0x9fa5:
+            return 2
     if _hiragana.search(character):
         return 0
     elif _katakana.search(character):
@@ -128,6 +142,37 @@ cpdef list get_words_ending_at_i(unicode text, dict dictionary):
     return words_ending_at_i[::-1]
 
 
+cpdef tuple get_words_starting_and_ending_at_i(unicode text, dict dictionary):
+    """Return (words_starting_at_i, words_ending_at_i), equal to
+    get_words_starting_at_i() and get_words_ending_at_i(), in one pass."""
+    cdef:
+        Py_ssize_t i
+        Py_ssize_t j
+        Py_ssize_t length_text = len(text)
+        list words_starting_at_i = [[] for i in range(length_text)]
+        list words_ending_at_i = [[] for i in range(length_text)]
+        list subwords
+        object word_id
+        object oov_id = dictionary[__OOV]
+
+    for i in range(length_text):
+        subwords = <list> words_starting_at_i[i]
+        for j in range(i, min(i+8, length_text)):
+            word_id = dictionary.get(text[i:j+1])
+            if word_id is not None:
+                subwords.append(word_id)
+                (<list> words_ending_at_i[j]).append(word_id)
+        if len(subwords) == 0:
+            subwords.append(oov_id)
+    for i in range(length_text):
+        subwords = <list> words_ending_at_i[i]
+        if len(subwords) == 0:
+            subwords.append(oov_id)
+        else:
+            subwords.reverse()
+    return words_starting_at_i, words_ending_at_i
+
+
 cpdef list conv_tokens_to_ids(list words, dict word2id):
     cdef unicode word
     return [word2id[word] if word in word2id else word2id[__OOV] for word in words]
@@ -155,8 +200,7 @@ cpdef list feature_extraction(unicode text, dict uni2id, dict bi2id,
     cids = context_window([get_chartype(uni) for uni in unigrams], window_size, pad_id=6)
 
     # word-level features
-    wids_s = get_words_starting_at_i(text, dictionary)
-    wids_e = get_words_ending_at_i(text, dictionary)
+    wids_s, wids_e = get_words_starting_and_ending_at_i(text, dictionary)
 
     features = [uids, bids, cids, wids_s, wids_e]
     return features
@@ -276,6 +320,7 @@ cdef extern from *:
     """
     #include <math.h>
     #include <stddef.h>
+    #include <string.h>
 
     /* MSVC's C mode does not recognize the bare C99 'restrict' keyword
        (only its own '__restrict' spelling); every other supported
@@ -293,8 +338,109 @@ cdef extern from *:
     #endif
 
     /* C(M,N) = A(M,K) @ B(K,N) + bias(N); row-major, lda/ldc row strides.
-       Each output row accumulates over k in ascending order, so results do
-       not depend on the row-blocking below. */
+       Each output element starts from its bias and accumulates over k in
+       ascending order, so results do not depend on the blocking below. */
+    #if defined(__GNUC__) || defined(__clang__)
+    typedef float nagisa_v8 __attribute__((vector_size(32)));
+    #define NAGISA_LOAD8(vector, pointer) \
+        memcpy(&(vector), (pointer), sizeof(nagisa_v8))
+    #define NAGISA_STORE8(pointer, vector) \
+        memcpy((pointer), &(vector), sizeof(nagisa_v8))
+
+    /* Rows are processed R at a time and columns 8*V at a time with
+       R*V = 8 accumulators that stay in registers over the k loop; the
+       remaining columns reuse the accumulate-in-place loop. */
+    #define NAGISA_GEMM_ROWS(R, V)                                           \
+        for (; i + (R) <= M; i += (R)) {                                     \
+            const float *a = A + i*lda;                                      \
+            float *c = C + i*ldc;                                            \
+            j = 0;                                                           \
+            for (; j + 8*(V) <= N; j += 8*(V)) {                             \
+                nagisa_v8 acc[R][V];                                         \
+                for (r = 0; r < (R); r++)                                    \
+                    for (v = 0; v < (V); v++)                                \
+                        memcpy(&acc[r][v], bias + j + 8*v, sizeof(nagisa_v8)); \
+                for (k = 0; k < K; k++) {                                    \
+                    const float *bk = B + k*N + j;                           \
+                    nagisa_v8 b[V];                                          \
+                    for (v = 0; v < (V); v++)                                \
+                        memcpy(&b[v], bk + 8*v, sizeof(nagisa_v8));          \
+                    for (r = 0; r < (R); r++) {                              \
+                        float ark = a[r*lda + k];                            \
+                        for (v = 0; v < (V); v++)                            \
+                            acc[r][v] += b[v] * ark;                         \
+                    }                                                        \
+                }                                                            \
+                for (r = 0; r < (R); r++)                                    \
+                    for (v = 0; v < (V); v++)                                \
+                        memcpy(c + r*ldc + j + 8*v, &acc[r][v], sizeof(nagisa_v8)); \
+            }                                                                \
+            if (j < N) {                                                     \
+                ptrdiff_t tail = N - j, jj;                                  \
+                for (r = 0; r < (R); r++)                                    \
+                    for (jj = 0; jj < tail; jj++)                            \
+                        c[r*ldc + j + jj] = bias[j + jj];                    \
+                for (k = 0; k < K; k++) {                                    \
+                    const float *bk = B + k*N + j;                           \
+                    for (r = 0; r < (R); r++) {                              \
+                        float ark = a[r*lda + k];                            \
+                        float *cr = c + r*ldc + j;                           \
+                        for (jj = 0; jj < tail; jj++)                        \
+                            cr[jj] += ark * bk[jj];                          \
+                    }                                                        \
+                }                                                            \
+            }                                                                \
+        }
+
+    NAGISA_TARGET_CLONES
+    static void nagisa_sgemm_bias(const float* restrict A, ptrdiff_t lda,
+                                  const float* restrict B,
+                                  const float* restrict bias,
+                                  float* restrict C, ptrdiff_t ldc,
+                                  ptrdiff_t M, ptrdiff_t K, ptrdiff_t N)
+    {
+        ptrdiff_t i = 0, j, k, r, v;
+        NAGISA_GEMM_ROWS(8, 1)
+        NAGISA_GEMM_ROWS(4, 2)
+        for (; i < M; i++) {
+            const float *a = A + i*lda;
+            float *c = C + i*ldc;
+            j = 0;
+            for (; j + 64 <= N; j += 64) {
+                nagisa_v8 c0, c1, c2, c3, c4, c5, c6, c7;
+                NAGISA_LOAD8(c0, bias + j);      NAGISA_LOAD8(c1, bias + j + 8);
+                NAGISA_LOAD8(c2, bias + j + 16); NAGISA_LOAD8(c3, bias + j + 24);
+                NAGISA_LOAD8(c4, bias + j + 32); NAGISA_LOAD8(c5, bias + j + 40);
+                NAGISA_LOAD8(c6, bias + j + 48); NAGISA_LOAD8(c7, bias + j + 56);
+                for (k = 0; k < K; k++) {
+                    const float *bk = B + k*N + j;
+                    float ak = a[k];
+                    nagisa_v8 b0, b1, b2, b3, b4, b5, b6, b7;
+                    NAGISA_LOAD8(b0, bk);      NAGISA_LOAD8(b1, bk + 8);
+                    NAGISA_LOAD8(b2, bk + 16); NAGISA_LOAD8(b3, bk + 24);
+                    NAGISA_LOAD8(b4, bk + 32); NAGISA_LOAD8(b5, bk + 40);
+                    NAGISA_LOAD8(b6, bk + 48); NAGISA_LOAD8(b7, bk + 56);
+                    c0 += b0 * ak; c1 += b1 * ak; c2 += b2 * ak; c3 += b3 * ak;
+                    c4 += b4 * ak; c5 += b5 * ak; c6 += b6 * ak; c7 += b7 * ak;
+                }
+                NAGISA_STORE8(c + j, c0);      NAGISA_STORE8(c + j + 8, c1);
+                NAGISA_STORE8(c + j + 16, c2); NAGISA_STORE8(c + j + 24, c3);
+                NAGISA_STORE8(c + j + 32, c4); NAGISA_STORE8(c + j + 40, c5);
+                NAGISA_STORE8(c + j + 48, c6); NAGISA_STORE8(c + j + 56, c7);
+            }
+            if (j < N) {
+                ptrdiff_t tail = N - j, jj;
+                for (jj = 0; jj < tail; jj++) c[j + jj] = bias[j + jj];
+                for (k = 0; k < K; k++) {
+                    const float *bk = B + k*N + j;
+                    float ak = a[k];
+                    float *cr = c + j;
+                    for (jj = 0; jj < tail; jj++) cr[jj] += ak * bk[jj];
+                }
+            }
+        }
+    }
+    #else
     NAGISA_TARGET_CLONES
     static void nagisa_sgemm_bias(const float* restrict A, ptrdiff_t lda,
                                   const float* restrict B,
@@ -333,6 +479,49 @@ cdef extern from *:
             }
         }
     }
+    #endif
+
+    /* exp(x) for |x| <= 87 (the argument is clamped, NaN maps to -87) with
+       a relative error of about 1e-7. Branch-free so that the gate loops
+       below vectorize; adding and subtracting 1.5 * 2^23 rounds to the
+       nearest integer. */
+    static CYTHON_INLINE float nagisa_expf(float x)
+    {
+        union { int bits; float value; } scale;
+        float lower_clamped = x > -87.0f ? x : -87.0f;
+        float clamped = lower_clamped < 87.0f ? lower_clamped : 87.0f;
+        float scaled = clamped * 1.44269504088896341f;
+        float fn = (scaled + 12582912.0f) - 12582912.0f;
+        int n = (int)fn;
+        float r = (clamped - fn * 0.693359375f) - fn * -2.12194440e-4f;
+        float p = 1.9875691500e-4f;
+        p = p * r + 1.3981999507e-3f;
+        p = p * r + 8.3334519073e-3f;
+        p = p * r + 4.1665795894e-2f;
+        p = p * r + 1.6666665459e-1f;
+        p = p * r + 5.0000001201e-1f;
+        p = p * (r * r) + r + 1.0f;
+        scale.bits = (n + 127) << 23;
+        return p * scale.value;
+    }
+
+    /* LSTM state update from the gate pre-activations g = [i, f, o, g]:
+       c = sigmoid(f)*c + sigmoid(i)*tanh(g), h = sigmoid(o)*tanh(c). */
+    NAGISA_TARGET_CLONES
+    static void nagisa_lstm_gates(const float* restrict g, float* restrict h,
+                                  float* restrict c, ptrdiff_t hd)
+    {
+        ptrdiff_t j;
+        for (j = 0; j < hd; j++) {
+            float gate_i = 1.0f / (1.0f + nagisa_expf(-g[j]));
+            float gate_f = 1.0f / (1.0f + nagisa_expf(-g[hd + j]));
+            float gate_o = 1.0f / (1.0f + nagisa_expf(-g[2*hd + j]));
+            float cell_in = 1.0f - 2.0f / (nagisa_expf(2.0f * g[3*hd + j]) + 1.0f);
+            float ct = gate_f * c[j] + gate_i * cell_in;
+            c[j] = ct;
+            h[j] = gate_o * (1.0f - 2.0f / (nagisa_expf(2.0f * ct) + 1.0f));
+        }
+    }
 
     /* One LSTM direction over precomputed inputs XG[t] = Wx*x_t + b (the
        bias already includes DyNet's +1 forget-gate bias). Gate columns are
@@ -348,28 +537,15 @@ cdef extern from *:
                                 float* H, ptrdiff_t ldh, ptrdiff_t col_off,
                                 ptrdiff_t T, ptrdiff_t hd, int reverse)
     {
-        ptrdiff_t h4 = 4*hd, t, row, j, k;
+        ptrdiff_t h4 = 4*hd, t, row, j;
         for (j = 0; j < hd; j++) { h[j] = 0.0f; c[j] = 0.0f; }
         for (t = 0; t < T; t++) {
             row = reverse ? (T - 1 - t) : t;
-            {
-                const float *xrow = XG + row*h4;
-                for (j = 0; j < h4; j++) g[j] = xrow[j];
-            }
-            for (k = 0; k < hd; k++) {
-                float hk = h[k];
-                const float *whk = WhT + k*h4;
-                for (j = 0; j < h4; j++) g[j] += hk * whk[j];
-            }
-            {
-                float *out = H ? (H + row*ldh + col_off) : (float*)0;
-                for (j = 0; j < hd; j++) {
-                    float ct = ((1.0 / (1.0 + expf(-g[hd + j]))) * c[j]
-                                + (1.0 / (1.0 + expf(-g[j]))) * tanhf(g[3*hd + j]));
-                    c[j] = ct;
-                    h[j] = (1.0 / (1.0 + expf(-g[2*hd + j]))) * tanhf(ct);
-                    if (out) out[j] = h[j];
-                }
+            nagisa_sgemm_bias(h, hd, WhT, XG + row*h4, g, h4, 1, hd, h4);
+            nagisa_lstm_gates(g, h, c, hd);
+            if (H) {
+                float *out = H + row*ldh + col_off;
+                for (j = 0; j < hd; j++) out[j] = h[j];
             }
         }
     }
@@ -377,6 +553,8 @@ cdef extern from *:
     void nagisa_sgemm_bias(const float* A, Py_ssize_t lda, const float* B,
                            const float* bias, float* C, Py_ssize_t ldc,
                            Py_ssize_t M, Py_ssize_t K, Py_ssize_t N) nogil
+    void nagisa_lstm_gates(const float* g, float* h, float* c,
+                           Py_ssize_t hd) nogil
     void nagisa_lstm_seq(const float* XG, const float* WhT, float* g,
                          float* h, float* c, float* H, Py_ssize_t ldh,
                          Py_ssize_t col_off, Py_ssize_t T, Py_ssize_t hd,
@@ -481,7 +659,6 @@ def char_vecs_1layer(ids, lens, UNI, WxTf, bf, WhTf, WxTb, bb):
     cdef float* h
     cdef float* c
     cdef Py_ssize_t n, t, j, L
-    cdef float ct
     with nogil:
         XG = <float*> malloc(Lmax * h4 * sizeof(float))
         work = <float*> malloc((h4 + 2 * hd) * sizeof(float))
@@ -511,8 +688,11 @@ def char_vecs_1layer(ids, lens, UNI, WxTf, bf, WhTf, WxTb, bb):
             nagisa_sgemm_bias(&E[idv[n, L - 1], 0], du, &Wxb[0, 0], &bbv[0],
                               g, h4, 1, du, h4)
             for j in range(hd):
-                ct = (1.0 / (1.0 + expf(-g[j]))) * tanhf(g[3 * hd + j])
-                out[n, hd + j] = (1.0 / (1.0 + expf(-g[2 * hd + j]))) * tanhf(ct)
+                h[j] = 0
+                c[j] = 0
+            nagisa_lstm_gates(g, h, c, hd)
+            for j in range(hd):
+                out[n, hd + j] = h[j]
         free(XG)
         free(work)
     return out_arr

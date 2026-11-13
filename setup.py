@@ -11,7 +11,7 @@ if sys.platform == "win32":
 else:
     # The inference kernels in nagisa_utils.pyx rely on the compiler
     # auto-vectorizing their inner loops.
-    extra_compile_args = ["-O3"]
+    extra_compile_args = ["-O3", "-fno-trapping-math", "-fno-math-errno"]
 
 extensions = [
     Extension(
