@@ -11,6 +11,10 @@ on:
         description: "Publish the built wheels and sdist to TestPyPI"
         type: boolean
         default: false
+      publish_to_pypi_version:
+        description: "Publish to PyPI (master only): the version to publish, e.g. 0.3.2. Leave empty to skip."
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -93,7 +97,14 @@ jobs:
 
   publish_pypi:
     name: Publish to PyPI
-    if: github.event_name == 'release'
+    # Published by a release, or by a manual run on master that names the
+    # version. The manual run is for uploading the files that are missing
+    # when a release run stopped partway through.
+    if: >-
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.publish_to_pypi_version != '' &&
+       github.ref == 'refs/heads/master')
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -107,14 +118,18 @@ jobs:
         with:
           path: dist
           merge-multiple: true
-      - name: Check that the release tag matches the package version
+      - name: Check that the requested version matches the package version
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          REQUESTED_VERSION: ${{ github.event_name == 'release' && github.ref_name || inputs.publish_to_pypi_version }}
         run: |
-          version="${RELEASE_TAG#v}"
+          version="${REQUESTED_VERSION#v}"
           if [ ! -f "dist/nagisa-${version}.tar.gz" ]; then
-            echo "Release tag ${RELEASE_TAG} does not match the package version:"
+            echo "Requested version ${REQUESTED_VERSION} does not match the package version:"
             ls dist/*.tar.gz
             exit 1
           fi
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
+        with:
+          # Files that are already on PyPI are skipped, so a run that stopped
+          # partway through can be run again.
+          skip-existing: true
