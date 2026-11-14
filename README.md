@@ -66,7 +66,7 @@ print(words.postags)
 Post-processing functions
 =====
 
-Filter and extarct words by the specific POS tags.
+Filter and extract words by the specific POS tags.
 ```python
 import nagisa
 
@@ -75,7 +75,7 @@ words = nagisa.filter(text, filter_postags=['助詞', '助動詞'])
 print(words)
 #=> Python/名詞 簡単/形状詞 使える/動詞 ツール/名詞
 
-# Extarct only nouns.
+# Extract only nouns.
 words = nagisa.extract(text, extract_postags=['名詞'])
 print(words)
 #=> Python/名詞 ツール/名詞
@@ -132,7 +132,7 @@ Refer to [sample datasets](/nagisa/data/sample_datasets) and [tutorial (Train a 
 $ cat sample.train
 唯一	NOUN
 の	ADP
-趣味	NOU
+趣味	NOUN
 は	ADP
 料理	NOUN
 EOS
