@@ -184,7 +184,7 @@ class from_file(object):
                     word = word.lower()
 
                     if word in word2postags:
-                        w2p = word2postags[word]
+                        w2p = list(word2postags[word])
                     else:
                         w2p = [0] # OOV
                     if self.use_noun_heuristic is True:
