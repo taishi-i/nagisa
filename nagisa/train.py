@@ -17,7 +17,6 @@ from nagisa import prepro
 from nagisa import mecab_system_eval
 from nagisa.tagger import Tagger
 
-logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -65,11 +64,20 @@ def fit(train_file, dev_file, test_file, model_name,
 
     return:
         - Nothing. After finish training, however,
-          save the three model files (*.vocabs, *.params, *.hp) in the current directory.
+          save the three model files (``*.vocabs``, ``*.params``, ``*.hp``) in the current directory.
 
     """
 
-    from nagisa import model
+    try:
+        from nagisa import model
+    except ModuleNotFoundError as import_error:
+        if import_error.name not in ('dynet', 'dynet_config', '_dynet'):
+            raise
+        raise ModuleNotFoundError(
+            'nagisa.fit requires DyNet, which is not installed. '
+            'Install it with "pip install DyNet38" '
+            '(available for Python 3.10-3.14, except free-threaded builds).',
+            name=import_error.name) from import_error
 
     random.seed(seed)
 
@@ -149,7 +157,19 @@ def fit(train_file, dev_file, test_file, model_name,
     _model = model.Model(hp=hp, embs=embs)
 
     # Start training
-    _start(hp, model=_model, train_data=TrainData, test_data=TestData, dev_data=DevData)
+    log_handler = None
+    previous_log_level = logger.level
+    if not logger.hasHandlers():
+        log_handler = logging.StreamHandler()
+        log_handler.setFormatter(logging.Formatter('%(message)s'))
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.INFO)
+    try:
+        _start(hp, model=_model, train_data=TrainData, test_data=TestData, dev_data=DevData)
+    finally:
+        if log_handler is not None:
+            logger.removeHandler(log_handler)
+            logger.setLevel(previous_log_level)
 
 
 def _evaluation(hp, fn_model, data):
@@ -186,12 +206,12 @@ def _evaluation(hp, fn_model, data):
 
 def _start(hp, model, train_data, test_data, dev_data):
     for k, v in hp.items():
-        logging.info('[nagisa] {}: {}'.format(k, v))
+        logger.info('[nagisa] {}: {}'.format(k, v))
 
     logs = '{:5}\t{:5}\t{:5}\t{:5}\t{:8}\t{:8}\t{:8}\t{:8}'.format(
         'Epoch', 'LR', 'Loss', 'Time_m', 'DevWS_f1',
         'DevPOS_f1', 'TestWS_f1', 'TestPOS_f1')
-    logging.info(logs)
+    logger.info(logs)
 
 
     utils.dump_data(hp, hp['HYPERPARAMS'])
@@ -250,5 +270,5 @@ def _start(hp, model, train_data, test_data, dev_data):
             logs[0], logs[1], logs[2], logs[3], logs[4],
             logs[5], logs[6], logs[7])
 
-        logging.info(logs)
+        logger.info(logs)
 
