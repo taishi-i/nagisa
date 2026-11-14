@@ -120,7 +120,7 @@ class TestNagisa(unittest.TestCase):
 
         # test_26
         text = "エラーを避けるため、İはIに変換される"
-        output = "エラー/名詞 を/助詞 避ける/動詞 ため/名詞 、/補助記号 I/名詞 は/助詞 I/名詞 に/助詞 変換/名詞 さ/動詞 れる/助動詞"
+        output = "エラー/名詞 を/助詞 避ける/動詞 ため/名詞 、/補助記号 I/記号 は/助詞 I/記号 に/助詞 変換/名詞 さ/動詞 れる/助動詞"
         words = nagisa.tagging(text)
         self.assertEqual(output, str(words))
 
@@ -169,12 +169,14 @@ class TestNagisa(unittest.TestCase):
     @unittest.skipUnless(HAS_DYNET, "DyNet is not installed")
     def test_fit(self):
         # test_22
-        nagisa.fit(
-            train_file="nagisa/data/sample_datasets/sample.train",
-            dev_file="nagisa/data/sample_datasets/sample.dev",
-            test_file="nagisa/data/sample_datasets/sample.test",
-            model_name="sample",
-        )
+        with self.assertLogs("nagisa.train", level="INFO") as captured_logs:
+            nagisa.fit(
+                train_file="nagisa/data/sample_datasets/sample.train",
+                dev_file="nagisa/data/sample_datasets/sample.dev",
+                test_file="nagisa/data/sample_datasets/sample.test",
+                model_name="sample",
+            )
+        self.assertTrue(any("Epoch" in line for line in captured_logs.output))
 
         # test_23
         nagisa.fit(
@@ -201,6 +203,16 @@ class TestNagisa(unittest.TestCase):
             min_count=0
         )
 
+    @unittest.skipIf(HAS_DYNET, "DyNet is installed")
+    def test_fit_without_dynet(self):
+        with self.assertRaisesRegex(ModuleNotFoundError, "pip install DyNet38"):
+            nagisa.fit(
+                train_file="nagisa/data/sample_datasets/sample.train",
+                dev_file="nagisa/data/sample_datasets/sample.dev",
+                test_file="nagisa/data/sample_datasets/sample.test",
+                model_name="sample",
+            )
+
     def test_mecab_system_eval(self):
         # test_25
         system_file = "nagisa/data/sample_datasets/sample.pred"
@@ -214,6 +226,19 @@ class TestNagisa(unittest.TestCase):
 
         nagisa.train.mecab_system_eval.print_eval(r)
         self.assertEqual(r, expected_r)
+
+    def test_tagging_from_threads(self):
+        import concurrent.futures
+        texts = [
+            'Pythonで簡単に使えるツールです',
+            'ニューラルネットワークを使ってます。',
+            '3月に見た「3月のライオン」'
+        ] * 25
+        expected_outputs = [str(nagisa.tagging(text)) for text in texts]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            threaded_outputs = list(executor.map(
+                lambda text: str(nagisa.tagging(text)), texts))
+        self.assertEqual(expected_outputs, threaded_outputs)
 
     def test_stopwords(self):
         # test_31
