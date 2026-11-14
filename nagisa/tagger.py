@@ -137,13 +137,16 @@ class Tagger(object):
         if lower is True:
             words = [w.lower() for w in words]
 
-        wids = utils.conv_tokens_to_ids(words, self._word2id)
+        # The vocabularies are built from lowercased words (see nagisa.prepro),
+        # so the features are looked up with lowercased words.
+        lookup_words = [w.lower() for w in words]
+        wids = utils.conv_tokens_to_ids(lookup_words, self._word2id)
         cids = [utils.conv_tokens_to_ids([c for c in w], self._uni2id) for w in words]
 
         # Improve the bottleneck in part-of-speech tagging.
         # No changes made to output results by this change.
         tids = []
-        for w in words:
+        for w in lookup_words:
             w2p = set(self._word2postags.get(w, [0]))
             if self.use_noun_heuristic and w.isalnum():
                 if 0 in w2p:
@@ -236,8 +239,8 @@ class Tagger(object):
             - text (str): An input sentence.
             - lower (bool): If lower is True, all uppercase characters in a list \
                             of the words are converted into lowercase characters.
-            - filter_postags (list): Extracting the word with the POS-tag in \
-                                     filter_postags from a text.
+            - extract_postags (list): Extracting the word with the POS-tag in \
+                                      extract_postags from a text.
 
         return:
             - object : The object of the words with POS-tags.
